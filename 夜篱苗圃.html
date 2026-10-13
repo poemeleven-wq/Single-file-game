@@ -1,0 +1,2598 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>夜篱苗圃：雾灯夜守望</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%230a1712'/%3E%3Cpath d='M32 8c10 6 14 18 10 30-3 9-12 14-19 10-8-4-9-16-4-26 3-6 8-10 13-14Z' fill='%2335705c'/%3E%3Ccircle cx='45' cy='19' r='7' fill='%23c9a227'/%3E%3Cpath d='M20 40h16M18 48h12' stroke='%23f6efdc' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+    <style>
+      :root {
+        color-scheme: dark;
+        --night: #0a1712;
+        --night-2: #0f211a;
+        --paper: #f6efdc;
+        --panel: #fffaeb;
+        --panel-2: #efe6cc;
+        --ink: #1e2b23;
+        --muted: #5f7062;
+        --line: rgba(30, 43, 35, 0.42);
+        --brass: #c9a227;
+        --brass-deep: #a07c14;
+        --brass-soft: rgba(201, 162, 39, 0.16);
+        --leaf: #35705c;
+        --leaf-dark: #1f4f43;
+        --rose: #b9453d;
+        --shadow: rgba(3, 8, 6, 0.45);
+        --radius: 10px;
+        --serif: "Songti SC", "Noto Serif SC", "SimSun", Georgia, serif;
+        --mono: "JetBrains Mono", "Cascadia Mono", Consolas, "Courier New",
+          monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        overflow-x: hidden;
+        color: var(--paper);
+        font-family: var(--serif);
+        background:
+          radial-gradient(
+            1100px 520px at 82% -12%,
+            rgba(201, 162, 39, 0.09),
+            transparent 62%
+          ),
+          linear-gradient(rgba(246, 239, 220, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(246, 239, 220, 0.035) 1px, transparent 1px),
+          var(--night);
+        background-size:
+          auto,
+          34px 34px,
+          34px 34px,
+          auto;
+      }
+
+      button {
+        font: inherit;
+        color: inherit;
+      }
+
+      .nh-glasshouse {
+        width: min(1480px, calc(100vw - 28px));
+        margin: 12px auto 18px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .nh-masthead {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 22px;
+        border: 1.5px solid var(--ink);
+        border-radius: var(--radius);
+        background: var(--panel);
+        box-shadow:
+          0 14px 30px var(--shadow),
+          inset 0 0 0 3px var(--panel-2);
+      }
+
+      .nh-kicker {
+        margin: 0 0 5px;
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.32em;
+        color: var(--brass-deep);
+      }
+
+      .nh-masthead h1 {
+        margin: 0;
+        font-size: 29px;
+        letter-spacing: 0.05em;
+        color: var(--ink);
+        border-bottom: 2px solid var(--brass);
+        padding-bottom: 5px;
+        display: inline-block;
+      }
+
+      .nh-masthead-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .nh-gauges {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .nh-gauge {
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--brass);
+        border-radius: 6px;
+        background: var(--panel);
+        box-shadow: 0 8px 18px var(--shadow);
+      }
+
+      .nh-gauge span {
+        display: block;
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.2em;
+        color: var(--muted);
+      }
+
+      .nh-gauge strong {
+        display: block;
+        margin-top: 6px;
+        font-size: 25px;
+        line-height: 1;
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .nh-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 394px;
+        gap: 14px;
+        align-items: start;
+      }
+
+      .nh-arena,
+      .nh-ledger,
+      .nh-veil-card {
+        min-width: 0;
+        border: 1.5px solid var(--ink);
+        border-radius: var(--radius);
+        background: var(--panel);
+        box-shadow: 0 16px 32px var(--shadow);
+      }
+
+      .nh-arena {
+        padding: 12px;
+      }
+
+      .nh-canvas-wrap {
+        position: relative;
+        overflow: hidden;
+        border: 1.5px solid var(--ink);
+        border-radius: 8px;
+        background: var(--night-2);
+        box-shadow:
+          inset 0 0 0 1px rgba(201, 162, 39, 0.28),
+          inset 0 10px 26px rgba(3, 8, 6, 0.55);
+      }
+
+      canvas {
+        display: block;
+        width: 100%;
+        height: min(62vh, 650px);
+        min-height: 500px;
+      }
+
+      .nh-hint {
+        margin: 9px 2px 0;
+        color: var(--muted);
+        font-size: 12.5px;
+        line-height: 1.65;
+      }
+
+      .nh-ledger {
+        padding: 14px;
+      }
+
+      .nh-section {
+        padding: 12px 0;
+        border-bottom: 1px dotted var(--line);
+      }
+
+      .nh-section:first-child {
+        padding-top: 0;
+      }
+
+      .nh-section:last-child {
+        border-bottom: 0;
+      }
+
+      .nh-section-title {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 9px;
+      }
+
+      .nh-section-title h2 {
+        margin: 0;
+        font-size: 15px;
+        letter-spacing: 0.1em;
+        color: var(--ink);
+      }
+
+      .nh-section-title h2::before {
+        content: "▪";
+        color: var(--brass);
+        margin-right: 6px;
+      }
+
+      .nh-tag {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        color: var(--brass-deep);
+        background: var(--brass-soft);
+        border: 1px solid var(--brass);
+        border-radius: 2px;
+        padding: 2px 7px;
+        white-space: nowrap;
+      }
+
+      .nh-map-grid,
+      .nh-keeper-grid,
+      .nh-ability-grid,
+      .nh-action-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .nh-action-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .nh-shop-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .nh-map-button,
+      .nh-keeper-button,
+      .nh-shop-card,
+      .nh-tool-button,
+      .nh-quiet-button,
+      .nh-choice-button {
+        border: 1.5px solid var(--line);
+        border-radius: 6px;
+        background: var(--panel);
+        color: var(--ink);
+        cursor: pointer;
+        transition:
+          transform 120ms ease,
+          border-color 120ms ease,
+          box-shadow 120ms ease,
+          background 120ms ease;
+      }
+
+      .nh-map-button:hover,
+      .nh-keeper-button:hover,
+      .nh-shop-card:hover,
+      .nh-tool-button:hover,
+      .nh-quiet-button:hover,
+      .nh-choice-button:hover {
+        border-color: var(--brass-deep);
+        box-shadow: 0 3px 0 var(--brass-soft);
+        transform: translateY(-1px);
+      }
+
+      .nh-map-button {
+        min-height: 58px;
+        display: grid;
+        place-items: center;
+        gap: 2px;
+        padding: 8px 6px;
+        text-align: center;
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--ink);
+      }
+
+      .nh-map-button.nh-on {
+        background: var(--leaf-dark);
+        color: var(--paper);
+        border-color: var(--brass);
+      }
+
+      .nh-keeper-button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 8px 10px;
+        text-align: left;
+        font-size: 13px;
+        color: var(--ink);
+      }
+
+      .nh-keeper-button.nh-on {
+        background: var(--leaf-dark);
+        color: var(--paper);
+        border-color: var(--brass);
+      }
+
+      .nh-shop-card {
+        display: grid;
+        grid-template-columns: 36px minmax(0, 1fr);
+        gap: 8px;
+        padding: 9px;
+        text-align: left;
+        align-items: start;
+        color: var(--ink);
+      }
+
+      .nh-shop-card.nh-available {
+        border-color: var(--brass-deep);
+        background: #fffdf4;
+      }
+
+      .nh-shop-card.nh-locked {
+        opacity: 0.6;
+        border-style: dashed;
+      }
+
+      .nh-shop-card:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .nh-tower-mark {
+        display: grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--brass-soft);
+        border: 1px solid var(--brass-deep);
+        color: var(--brass-deep);
+        font-weight: 900;
+        font-family: var(--serif);
+      }
+
+      .nh-shop-title {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 6px;
+        margin-bottom: 3px;
+      }
+
+      .nh-shop-title strong {
+        font-size: 14px;
+        letter-spacing: 0.04em;
+      }
+
+      .nh-cost {
+        font-family: var(--mono);
+        color: var(--brass-deep);
+        font-weight: 700;
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+      .nh-shop-card p,
+      .nh-detail-box p,
+      .nh-log-list li {
+        margin: 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .nh-detail-box {
+        padding: 10px 12px;
+        border: 1px dotted var(--line);
+        border-radius: 6px;
+        background: var(--panel-2);
+        color: var(--ink);
+      }
+
+      .nh-detail-box strong {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 14px;
+        letter-spacing: 0.04em;
+      }
+
+      .nh-detail-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .nh-key-button {
+        width: 100%;
+        padding: 12px;
+        border: 1.5px solid var(--brass-deep);
+        border-radius: 6px;
+        background: var(--leaf-dark);
+        color: var(--paper);
+        font-family: var(--serif);
+        font-size: 15px;
+        letter-spacing: 0.24em;
+        cursor: pointer;
+        transition:
+          background 120ms ease,
+          transform 120ms ease;
+      }
+
+      .nh-key-button:hover {
+        background: var(--leaf);
+      }
+
+      .nh-key-button:active {
+        transform: translateY(1px);
+      }
+
+      .nh-key-button:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+
+      .nh-tool-button,
+      .nh-choice-button {
+        padding: 8px 10px;
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.04em;
+        color: var(--ink);
+      }
+
+      .nh-tool-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .nh-quiet-button {
+        padding: 7px 13px;
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        background: var(--panel-2);
+        color: var(--ink);
+      }
+
+      .nh-log-list {
+        display: grid;
+        gap: 6px;
+        max-height: 150px;
+        overflow: auto;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .nh-log-list li {
+        padding: 5px 9px;
+        background: var(--panel-2);
+        border-left: 3px solid var(--line);
+        border-radius: 0 4px 4px 0;
+        color: var(--ink);
+      }
+
+      .nh-log-list li.nh-good {
+        border-left-color: var(--leaf);
+      }
+
+      .nh-log-list li.nh-warn {
+        border-left-color: var(--rose);
+      }
+
+      .nh-log-list li.nh-info {
+        border-left-color: var(--brass);
+      }
+
+      .nh-veil {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: grid;
+        place-items: center;
+        overflow-y: auto;
+        padding: 18px;
+        background: rgba(10, 23, 18, 0.88);
+        backdrop-filter: blur(3px);
+      }
+
+      .nh-veiled {
+        display: none;
+      }
+
+      .nh-veil-card {
+        width: min(760px, 100%);
+        padding: 22px;
+      }
+
+      .nh-veil-card h2 {
+        margin: 0 0 12px;
+        font-size: 22px;
+        letter-spacing: 0.1em;
+        color: var(--ink);
+        border-bottom: 2px solid var(--brass);
+        padding-bottom: 7px;
+      }
+
+      .nh-veil-body p {
+        margin: 0 0 10px;
+        font-size: 13.5px;
+        line-height: 1.9;
+        color: var(--ink);
+      }
+
+      .nh-veil-body .nh-action-grid {
+        margin-top: 14px;
+      }
+
+      .nh-archive-code {
+        width: 100%;
+        min-height: 108px;
+        padding: 10px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--panel-2);
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--ink);
+      }
+
+      .nh-drag-ghost {
+        position: fixed;
+        z-index: 99;
+        pointer-events: none;
+        opacity: 0.92;
+        transform: translate(-50%, -60%) scale(0.94);
+        padding: 6px 12px;
+        border: 1.5px solid var(--brass-deep);
+        border-radius: 5px;
+        background: var(--panel);
+        color: var(--ink);
+        font-family: var(--serif);
+        font-size: 13px;
+        box-shadow: 0 10px 22px var(--shadow);
+      }
+
+      .nh-ai-box {
+        padding: 10px;
+        border: 1px dashed var(--line);
+        border-radius: 6px;
+        background: var(--panel-2);
+        color: var(--ink);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      @media (min-width: 1121px) {
+        .nh-ledger {
+          position: sticky;
+          top: 12px;
+          max-height: calc(62vh + 32px);
+          overflow-y: auto;
+          overscroll-behavior: contain;
+          scrollbar-gutter: stable;
+        }
+      }
+
+      @media (max-width: 1120px) {
+        .nh-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .nh-arena {
+          order: -1;
+        }
+
+        .nh-shop-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 720px) {
+        .nh-glasshouse {
+          width: min(100vw - 18px, 1480px);
+          margin-top: 9px;
+        }
+
+        .nh-masthead {
+          display: block;
+          padding: 14px 16px;
+        }
+
+        .nh-masthead-actions {
+          justify-content: flex-start;
+          margin-top: 10px;
+        }
+
+        .nh-masthead h1 {
+          font-size: 24px;
+        }
+
+        .nh-gauges {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .nh-gauge {
+          min-height: 54px;
+          padding: 9px 12px;
+        }
+
+        .nh-gauge strong {
+          font-size: 21px;
+        }
+
+        .nh-gauge:last-child {
+          grid-column: 1 / -1;
+        }
+
+        .nh-ability-grid,
+        .nh-action-grid,
+        .nh-shop-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .nh-map-grid,
+        .nh-keeper-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        canvas {
+          min-height: 310px;
+          height: 45vh;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="nh-glasshouse">
+      <header class="nh-masthead">
+        <div>
+          <p class="nh-kicker">四区十二线夜篱塔防战役</p>
+          <h1>夜篱苗圃：雾灯夜守望</h1>
+        </div>
+        <div class="nh-masthead-actions">
+          <button id="nhArchiveButton" class="nh-quiet-button" type="button">卷宗</button>
+          <button id="nhHelpButton" class="nh-quiet-button" type="button">守则</button>
+          <button id="nhResetButton" class="nh-quiet-button" type="button">重开</button>
+        </div>
+      </header>
+
+      <section class="nh-gauges" aria-label="圃局状态">
+        <div class="nh-gauge">
+          <span>轮次</span>
+          <strong id="nhWave">0/8</strong>
+        </div>
+        <div class="nh-gauge">
+          <span>月露</span>
+          <strong id="nhDew">120</strong>
+        </div>
+        <div class="nh-gauge">
+          <span>苗心</span>
+          <strong id="nhHeart">20</strong>
+        </div>
+        <div class="nh-gauge">
+          <span>清墟</span>
+          <strong id="nhClear">0/0</strong>
+        </div>
+        <div class="nh-gauge">
+          <span>星评</span>
+          <strong id="nhStars">★★★</strong>
+        </div>
+      </section>
+
+      <main class="nh-layout">
+        <section class="nh-arena" aria-label="塔防战场">
+          <div class="nh-canvas-wrap">
+            <canvas id="nhStage" width="960" height="600" aria-label="夜篱苗圃塔防战场"></canvas>
+          </div>
+          <p class="nh-hint">点空地基建塔，点已有塔升级或出售。没有敌人时，塔会自动清理障碍物换取月露并解锁地基。</p>
+        </section>
+
+        <aside class="nh-ledger">
+          <section class="nh-section">
+            <div class="nh-section-title">
+              <h2>防线契约</h2>
+              <span id="nhMapTag" class="nh-tag">十二线</span>
+            </div>
+            <div id="nhMapGrid" class="nh-map-grid"></div>
+          </section>
+
+          <section class="nh-section">
+            <div class="nh-section-title">
+              <h2>守篱人</h2>
+              <span class="nh-tag">被动专长</span>
+            </div>
+            <div id="nhKeeperGrid" class="nh-keeper-grid"></div>
+          </section>
+
+          <section class="nh-section">
+            <div class="nh-section-title">
+              <h2>筑台</h2>
+              <span id="nhSlotTag" class="nh-tag">先点地基</span>
+            </div>
+            <div id="nhShopGrid" class="nh-shop-grid"></div>
+          </section>
+
+          <section class="nh-section">
+            <div class="nh-section-title">
+              <h2>详情</h2>
+              <span id="nhDetailTag" class="nh-tag">未选择</span>
+            </div>
+            <div id="nhDetailBox" class="nh-detail-box"></div>
+          </section>
+
+          <section class="nh-section">
+            <div class="nh-section-title">
+              <h2>机能</h2>
+              <span id="nhAbilityTag" class="nh-tag">点后选位置</span>
+            </div>
+            <div id="nhAbilityGrid" class="nh-ability-grid"></div>
+          </section>
+
+          <section class="nh-section">
+            <div class="nh-section-title">
+              <h2>轮次</h2>
+              <span id="nhSpeedTag" class="nh-tag">1x</span>
+            </div>
+            <button id="nhWaveButton" class="nh-key-button" type="button">开始第 1 轮</button>
+            <div class="nh-action-grid" style="margin-top: 8px;">
+              <button id="nhSpeedButton" class="nh-tool-button" type="button">切换 2x</button>
+              <button id="nhPauseButton" class="nh-tool-button" type="button">搁置</button>
+            </div>
+          </section>
+
+          <section class="nh-section">
+            <div class="nh-section-title">
+              <h2>日志</h2>
+            </div>
+            <ul id="nhLogList" class="nh-log-list"></ul>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <div id="nhVeil" class="nh-veil nh-veiled" role="dialog" aria-modal="true" aria-labelledby="nhVeilTitle">
+      <div class="nh-veil-card">
+        <p id="nhVeilKicker" class="nh-kicker">守则</p>
+        <h2 id="nhVeilTitle">夜篱怎么守</h2>
+        <div id="nhVeilBody" class="nh-veil-body"></div>
+      </div>
+    </div>
+
+    <script>
+      const W = 960;
+      const H = 600;
+      const canvas = document.getElementById("nhStage");
+      const ctx = canvas.getContext("2d");
+
+      const ui = {
+        wave: document.getElementById("nhWave"),
+        gold: document.getElementById("nhDew"),
+        life: document.getElementById("nhHeart"),
+        clear: document.getElementById("nhClear"),
+        stars: document.getElementById("nhStars"),
+        mapButtons: document.getElementById("nhMapGrid"),
+        difficultyButtons: document.getElementById("nhKeeperGrid"),
+        towerShop: document.getElementById("nhShopGrid"),
+        selected: document.getElementById("nhDetailBox"),
+        selectedTag: document.getElementById("nhDetailTag"),
+        slotHint: document.getElementById("nhSlotTag"),
+        abilities: document.getElementById("nhAbilityGrid"),
+        abilityHint: document.getElementById("nhAbilityTag"),
+        waveButton: document.getElementById("nhWaveButton"),
+        speedButton: document.getElementById("nhSpeedButton"),
+        speedTag: document.getElementById("nhSpeedTag"),
+        pauseButton: document.getElementById("nhPauseButton"),
+        log: document.getElementById("nhLogList"),
+        reset: document.getElementById("nhResetButton"),
+        archive: document.getElementById("nhArchiveButton"),
+        help: document.getElementById("nhHelpButton"),
+        mapLockHint: document.getElementById("nhMapTag"),
+        modal: document.getElementById("nhVeil"),
+        modalKicker: document.getElementById("nhVeilKicker"),
+        modalTitle: document.getElementById("nhVeilTitle"),
+        modalBody: document.getElementById("nhVeilBody")
+      };
+
+      const commanders = {
+        steward: { name: "园丁长", short: "丁", cost: 0.9, obstacle: 1.2, range: 1, damage: 1, lives: 0, cooldown: 1, guard: 1, desc: "建造和升级九折，清墟奖励提高 20%。" },
+        scout: { name: "提灯员", short: "灯", cost: 1, obstacle: 1, range: 1.12, damage: 1.05, lives: 0, cooldown: 1, guard: 1, desc: "塔的射程提高 12%，伤害提高 5%。" },
+        keeper: { name: "篱门卫", short: "卫", cost: 1, obstacle: 1, range: 1, damage: 1, lives: 4, cooldown: 0.78, guard: 1.22, desc: "额外 4 点苗心，机能冷却缩短 22%，芽兵更强。" }
+      };
+
+      const maps = {
+        brook: {
+          name: "夜溪回廊",
+          short: "夜溪",
+          desc: "路径长、地基多，适合开局。",
+          path: [
+            { x: -30, y: 136 },
+            { x: 190, y: 136 },
+            { x: 190, y: 310 },
+            { x: 430, y: 310 },
+            { x: 430, y: 172 },
+            { x: 700, y: 172 },
+            { x: 700, y: 432 },
+            { x: 990, y: 432 }
+          ],
+          slots: [
+            { x: 120, y: 78 },
+            { x: 250, y: 226 },
+            { x: 332, y: 376 },
+            { x: 525, y: 236, lockedBy: "crate-1" },
+            { x: 608, y: 104 },
+            { x: 790, y: 332, lockedBy: "stone-1" },
+            { x: 830, y: 500 }
+          ],
+          obstacles: [
+            { id: "crate-1", kind: "crate", x: 520, y: 242, r: 25, hp: 90, reward: 26 },
+            { id: "stone-1", kind: "stone", x: 792, y: 326, r: 28, hp: 135, reward: 36 },
+            { id: "grass-1", kind: "grass", x: 338, y: 92, r: 22, hp: 70, reward: 18 },
+            { id: "barrel-1", kind: "barrel", x: 626, y: 512, r: 23, hp: 80, reward: 24 }
+          ]
+        },
+        windmill: {
+          name: "夜风车径",
+          short: "夜风",
+          desc: "中等长度，弯道集中，清墟收益高。",
+          path: [
+            { x: -30, y: 456 },
+            { x: 150, y: 456 },
+            { x: 150, y: 168 },
+            { x: 348, y: 168 },
+            { x: 348, y: 382 },
+            { x: 580, y: 382 },
+            { x: 580, y: 128 },
+            { x: 990, y: 128 }
+          ],
+          slots: [
+            { x: 92, y: 350 },
+            { x: 218, y: 238 },
+            { x: 306, y: 94 },
+            { x: 438, y: 300, lockedBy: "mill-1" },
+            { x: 514, y: 474 },
+            { x: 688, y: 208, lockedBy: "crate-2" },
+            { x: 810, y: 70 }
+          ],
+          obstacles: [
+            { id: "mill-1", kind: "mill", x: 442, y: 300, r: 31, hp: 150, reward: 42 },
+            { id: "crate-2", kind: "crate", x: 688, y: 208, r: 25, hp: 95, reward: 30 },
+            { id: "stone-2", kind: "stone", x: 250, y: 506, r: 26, hp: 120, reward: 32 },
+            { id: "grass-2", kind: "grass", x: 746, y: 434, r: 22, hp: 72, reward: 20 }
+          ]
+        },
+        terrace: {
+          name: "月梯蛇径",
+          short: "月梯",
+          desc: "路线短、地基少，需要兵营阻挡。",
+          path: [
+            { x: -30, y: 100 },
+            { x: 250, y: 100 },
+            { x: 250, y: 242 },
+            { x: 70, y: 242 },
+            { x: 70, y: 405 },
+            { x: 500, y: 405 },
+            { x: 500, y: 250 },
+            { x: 760, y: 250 },
+            { x: 760, y: 500 },
+            { x: 990, y: 500 }
+          ],
+          slots: [
+            { x: 152, y: 164 },
+            { x: 318, y: 172, lockedBy: "crate-3" },
+            { x: 156, y: 322 },
+            { x: 362, y: 480 },
+            { x: 574, y: 326 },
+            { x: 688, y: 182, lockedBy: "stone-3" },
+            { x: 836, y: 414 }
+          ],
+          obstacles: [
+            { id: "crate-3", kind: "crate", x: 318, y: 172, r: 25, hp: 95, reward: 30 },
+            { id: "stone-3", kind: "stone", x: 688, y: 182, r: 30, hp: 145, reward: 40 },
+            { id: "barrel-3", kind: "barrel", x: 224, y: 516, r: 23, hp: 82, reward: 26 },
+            { id: "grass-3", kind: "grass", x: 606, y: 510, r: 22, hp: 74, reward: 21 }
+          ]
+        }
+      };
+
+      const towers = {
+        pea: {
+          mark: "弩",
+          name: "豆荚弩",
+          cost: 45,
+          range: 136,
+          cd: 0.64,
+          damage: 17,
+          color: "#4f8d61",
+          projectile: "#bade68",
+          canAir: true,
+          desc: "造价可靠，可打空中目标。"
+        },
+        bubble: {
+          mark: "露",
+          name: "露泡塔",
+          cost: 55,
+          range: 118,
+          cd: 1.05,
+          damage: 6,
+          slow: 2.2,
+          color: "#3c85a4",
+          projectile: "#8fd0e0",
+          canAir: true,
+          desc: "伤害低，但能显著减速命中的敌人。"
+        },
+        mortar: {
+          mark: "炮",
+          name: "灯笼瓜炮",
+          cost: 80,
+          range: 158,
+          cd: 1.72,
+          damage: 28,
+          splash: 54,
+          color: "#a45d38",
+          projectile: "#f0a15e",
+          canAir: false,
+          desc: "范围爆轰，适合弯道与密集敌潮。"
+        },
+        charm: {
+          mark: "符",
+          name: "符灯塔",
+          cost: 72,
+          range: 130,
+          cd: 0.88,
+          damage: 18,
+          magic: true,
+          color: "#70569c",
+          projectile: "#ccb2ff",
+          canAir: true,
+          unlockWave: 3,
+          desc: "无视护甲，专治硬壳与飞行目标。"
+        },
+        barracks: {
+          mark: "卒",
+          name: "禾秆兵营",
+          cost: 68,
+          range: 96,
+          cd: 0.8,
+          damage: 8,
+          color: "#b49254",
+          canAir: false,
+          unlockWave: 2,
+          desc: "派禾秆卒在路上拦目标，像一道活动闸门。"
+        }
+      };
+
+      const enemies = {
+        nibble: { mark: "啮", name: "啮芽兔", hp: 38, speed: 52, armor: 0, reward: 6, damage: 1, color: "#86b56d" },
+        runner: { mark: "奔", name: "疾走瓜虫", hp: 32, speed: 88, armor: 0, reward: 6, damage: 1, color: "#c9a44e" },
+        shell: { mark: "壳", name: "釉壳甲虫", hp: 112, speed: 39, armor: 6, reward: 10, damage: 2, color: "#9c6b4a" },
+        flyer: { mark: "翼", name: "夜翼蛾", hp: 52, speed: 70, armor: 0, reward: 9, damage: 1, air: true, color: "#6f9fb3" },
+        healer: { mark: "芽", name: "回青芽", hp: 88, speed: 44, armor: 1, reward: 12, damage: 2, heal: true, color: "#b45f88" },
+        boss: { mark: "王", name: "篱园巨像", hp: 430, speed: 30, armor: 4, reward: 35, damage: 5, boss: true, color: "#8a3a42" }
+      };
+
+      function makeContractWaves(index, focus) {
+        const tier = Math.floor(index / 3);
+        return Array.from({ length: 6 }, (_, wave) => {
+          const groups = [{ type: "nibble", count: 5 + wave * 2 + tier, gap: Math.max(0.42, 0.84 - wave * 0.055) }];
+          const amount = 2 + wave + Math.floor(tier / 2);
+          if (wave >= 1 && (focus === "rush" || focus === "mixed" || focus === "siege")) groups.push({ type: "runner", count: amount + (focus === "rush" ? 2 : 0), gap: 0.66, delay: 0.8 });
+          if (wave >= 2 && (focus === "armor" || focus === "mixed" || focus === "siege")) groups.push({ type: "shell", count: Math.max(2, amount - 1), gap: 0.92, delay: 0.9 });
+          if (wave >= 2 && (focus === "air" || (focus === "mixed" && wave >= 4))) groups.push({ type: "flyer", count: amount + (focus === "air" ? 2 : 0), gap: 0.7, delay: 1 });
+          if (wave >= 3 && (focus === "heal" || focus === "siege" || (focus === "mixed" && wave === 5))) groups.push({ type: "healer", count: Math.max(2, Math.floor(amount / 2)), gap: 1.05, delay: 1 });
+          if (focus === "swarm" && wave >= 2) groups.push({ type: wave % 2 ? "runner" : "nibble", count: amount + 3, gap: 0.46, delay: 0.65 });
+          if (wave === 5) groups.push({ type: "boss", count: index >= 9 ? 2 : 1, gap: 1.2, delay: 1.2 });
+          return groups;
+        });
+      }
+
+      const CONTRACT_DATA = [
+        ["morning", "夜巡溪桥", "夜巡", "brook", "swarm", 174, 24, 0.82, 0.94, 1.14, 28, 0.96, 0.88, 22, 2, "清墟月露充足，先熟悉弯道火力。"],
+        ["windpost", "风铃急递", "风铃", "windmill", "rush", 166, 23, 0.88, 1.00, 1.11, 27, 0.98, 0.92, 20, 2, "疾走敌群提前出现，减速塔价值更高。"],
+        ["shellbank", "梯田釉甲", "釉甲", "terrace", "armor", 162, 22, 0.93, 0.96, 1.08, 27, 1.00, 0.92, 19, 2, "釉壳甲虫成队推进，需要破甲或重炮。"],
+        ["paperwing", "雾桥纸翼", "纸翼", "brook", "air", 158, 22, 0.98, 1.01, 1.07, 26, 1.00, 0.96, 19, 2, "空中目标穿过兵营，保留对空射界。"],
+        ["spring", "风车回青", "回青", "windmill", "heal", 156, 21, 1.01, 0.99, 1.06, 26, 1.00, 0.94, 18, 2, "回青芽会修复邻军，集中火力优先处理。"],
+        ["night", "月梯夜潮", "月潮", "terrace", "mixed", 154, 21, 1.04, 1.01, 1.05, 25, 1.00, 0.96, 18, 2, "地面、釉甲与空军交替，塔型必须互补。"],
+        ["harvest", "夜桥群袭", "群袭", "brook", "swarm", 152, 20, 1.07, 1.02, 1.04, 25, 1.02, 1.00, 17, 2, "密集敌潮压缩清墟时间，溅射决定效率。"],
+        ["ironmill", "铁磨夜线", "铁磨", "windmill", "armor", 150, 20, 1.10, 1.01, 1.03, 24, 1.02, 1.00, 17, 2, "高耐久敌军持续推进，升级节奏比铺塔更重要。"],
+        ["skyfield", "月田折翼", "折翼", "terrace", "air", 150, 20, 1.11, 1.04, 1.03, 24, 1.03, 1.00, 17, 2, "夜翼蛾数量增加，错误塔位会留下对空盲区。"],
+        ["thorn", "棘桥回青", "复苏", "brook", "heal", 148, 19, 1.13, 1.03, 1.02, 24, 1.04, 1.02, 16, 1, "治疗队列护送双巨像，机能需要留给关键窗口。"],
+        ["gale", "夜风追猎", "追猎", "windmill", "rush", 146, 19, 1.15, 1.06, 1.02, 23, 1.05, 1.03, 16, 1, "高速长队压缩反应时间，必须预先控制弯道。"],
+        ["crown", "桂冠终线", "终线", "terrace", "siege", 148, 18, 1.17, 1.04, 1.02, 24, 1.05, 1.04, 18, 1, "双巨像与治疗、釉甲共同压境，完成最终验收。"]
+      ];
+
+      const CONTRACTS = CONTRACT_DATA.map((data, index) => {
+        const [id, name, short, map, focus, gold, lives, hp, enemySpeed, reward, waveBonus, towerCost, abilityCooldown, starLives, starAbilities, rule] = data;
+        const recommended = focus === "swarm" || focus === "heal" ? "steward" : focus === "mixed" || focus === "siege" ? "keeper" : "scout";
+        return { id, name, short, map, focus, gold, lives, hp, enemySpeed, reward, waveBonus, towerCost, abilityCooldown, starLives, starAbilities, rule, recommended, index, seed: 4109 + index * 977, chapter: Math.floor(index / 3), waves: makeContractWaves(index, focus) };
+      });
+
+      const abilities = {
+        sprouts: {
+          mark: "援",
+          name: "蔓条援兵",
+          cooldown: 22,
+          desc: "在路边放下两枚临时芽卒，短时间拦截地面目标。"
+        },
+        rocket: {
+          mark: "炮",
+          name: "天坠胡苗心",
+          cooldown: 32,
+          desc: "对点选区域造成爆轰伤害，适合救急。"
+        }
+      };
+
+      function freshProfile() {
+        return { version: 2, unlocked: 0, stars: Array(12).fill(0), bestLives: Array(12).fill(0), clears: Array(12).fill(0), commander: "steward" };
+      }
+
+      function normalizeProfile(value) {
+        const next = freshProfile();
+        if (!value || typeof value !== "object") return next;
+        next.unlocked = Math.floor(clamp(Number(value.unlocked) || 0, 0, 11));
+        if (Array.isArray(value.stars)) next.stars = next.stars.map((fallback, index) => Math.floor(clamp(Number(value.stars[index]) || fallback, 0, 3)));
+        if (Array.isArray(value.bestLives)) next.bestLives = next.bestLives.map((fallback, index) => Math.floor(clamp(Number(value.bestLives[index]) || fallback, 0, 99)));
+        if (Array.isArray(value.clears)) next.clears = next.clears.map((fallback, index) => Math.floor(clamp(Number(value.clears[index]) || fallback, 0, 999)));
+        if (commanders[value.commander]) next.commander = value.commander;
+        return next;
+      }
+
+      function archiveHash(text) {
+        let hash = 2166136261;
+        for (let i = 0; i < text.length; i += 1) {
+          hash ^= text.charCodeAt(i);
+          hash = Math.imul(hash, 16777619);
+        }
+        return (hash >>> 0).toString(36);
+      }
+
+      function encodeArchive(value = profile) {
+        const body = btoa(JSON.stringify(normalizeProfile(value)));
+        return `RADISH2.${body}.${archiveHash(body)}`;
+      }
+
+      function decodeArchive(code) {
+        const parts = String(code).trim().split(".");
+        if (parts.length !== 3 || parts[0] !== "RADISH2" || archiveHash(parts[1]) !== parts[2]) throw Error("卷宗码校验失败");
+        let value;
+        try { value = JSON.parse(atob(parts[1])); } catch { throw Error("卷宗内容损坏"); }
+        if (value.version !== 2 || !Array.isArray(value.stars) || value.stars.length !== 12) throw Error("卷宗版本或长度不正确");
+        return normalizeProfile(value);
+      }
+
+      function loadProfile() {
+        try { return normalizeProfile(JSON.parse(localStorage.getItem("radish_guard_v2"))); } catch { return freshProfile(); }
+      }
+
+      function saveProfile() {
+        try {
+          localStorage.setItem("radish_guard_v2", JSON.stringify(profile));
+        } catch (error) {
+          console.warn("夜篱苗圃卷宗写入失败", error);
+        }
+      }
+
+      let profile = loadProfile();
+      let selectedContract = Math.min(profile.unlocked, 11);
+      let selectedCommander = profile.commander;
+      let state;
+      let dpr = 1;
+      let cam = { zoom: 1, x: 0, y: 0 };
+      let pinch = { active: false, dist: 0, mx: 0, my: 0 };
+      let cardDrag = { active: false, key: null, moved: false, startX: 0, startY: 0, ghost: null, suppressClick: false };
+      let lastTime = 0;
+      let animationId = null;
+
+      function clone(value) {
+        return JSON.parse(JSON.stringify(value));
+      }
+
+      function createState(testing = false) {
+        const contract = CONTRACTS[selectedContract];
+        const commander = commanders[selectedCommander];
+        const map = clone(maps[contract.map]);
+        const path = preparePath(map.path);
+        return {
+          contract,
+          commander: selectedCommander,
+          map,
+          path,
+          mode: "planning",
+          paused: false,
+          speed: 1,
+          gold: contract.gold,
+          lives: contract.lives + commander.lives,
+          maxLives: contract.lives + commander.lives,
+          wave: 0,
+          waveTime: 0,
+          elapsed: 0,
+          spawnQueue: [],
+          spawnIndex: 0,
+          selectedSlot: null,
+          selectedObstacle: null,
+          abilityMode: null,
+          cooldowns: { sprouts: 0, rocket: 0 },
+          enemies: [],
+          projectiles: [],
+          effects: [],
+          floaters: [],
+          guards: [],
+          slots: map.slots.map((slot, index) => ({ ...slot, id: index, tower: null })),
+          obstacles: map.obstacles.map((item) => ({ ...item, maxHp: item.hp, dead: false })),
+          kills: 0,
+          leaks: 0,
+          abilitiesUsed: 0,
+          buildActions: 0,
+          rngSeed: contract.seed >>> 0,
+          result: null,
+          testing,
+          nextId: 1,
+          logs: []
+        };
+      }
+
+      function preparePath(points) {
+        const segments = [];
+        let total = 0;
+        for (let i = 0; i < points.length - 1; i += 1) {
+          const a = points[i];
+          const b = points[i + 1];
+          const length = Math.hypot(b.x - a.x, b.y - a.y);
+          segments.push({ a, b, length, start: total, end: total + length });
+          total += length;
+        }
+        return { points, segments, total };
+      }
+
+      function newGame(options = {}) {
+        state = createState(Boolean(options.testing));
+        cam = { zoom: 1, x: 0, y: 0 };
+        addLog(`${state.contract.name} 已布防：${state.contract.rule}`);
+        addLog(`${commanders[state.commander].name} 到岗，选择空地基建塔。`, "nh-good");
+        renderUi();
+      }
+
+      function nextRandom(min = 0, max = 1) {
+        state.rngSeed = (Math.imul(state.rngSeed, 1664525) + 1013904223) >>> 0;
+        return min + (state.rngSeed / 4294967296) * (max - min);
+      }
+
+      function nextId() {
+        const id = state.nextId;
+        state.nextId += 1;
+        return id;
+      }
+
+      function addLog(text, type = "nh-info") {
+        state.logs.unshift({ text, type });
+        state.logs = state.logs.slice(0, 14);
+      }
+
+      function pointAt(distanceOnPath) {
+        const d = clamp(distanceOnPath, 0, state.path.total);
+        const segment = state.path.segments.find((item) => d <= item.end) || state.path.segments[state.path.segments.length - 1];
+        const t = segment.length ? (d - segment.start) / segment.length : 0;
+        return {
+          x: lerp(segment.a.x, segment.b.x, t),
+          y: lerp(segment.a.y, segment.b.y, t),
+          angle: Math.atan2(segment.b.y - segment.a.y, segment.b.x - segment.a.x)
+        };
+      }
+
+      function nearestPathPoint(x, y) {
+        let best = { x: state.path.points[0].x, y: state.path.points[0].y, d: Infinity, dist: 0 };
+        for (const segment of state.path.segments) {
+          const vx = segment.b.x - segment.a.x;
+          const vy = segment.b.y - segment.a.y;
+          const len2 = vx * vx + vy * vy || 1;
+          const t = clamp(((x - segment.a.x) * vx + (y - segment.a.y) * vy) / len2, 0, 1);
+          const px = segment.a.x + vx * t;
+          const py = segment.a.y + vy * t;
+          const d = Math.hypot(x - px, y - py);
+          if (d < best.d) {
+            best = { x: px, y: py, d, dist: segment.start + segment.length * t };
+          }
+        }
+        return best;
+      }
+
+      function startWave() {
+        if (state.mode === "running" || state.wave >= state.contract.waves.length) return;
+        state.wave += 1;
+        state.mode = "running";
+        state.waveTime = 0;
+        state.leaks = 0;
+        state.spawnIndex = 0;
+        state.spawnQueue = buildSpawnQueue(state.wave);
+        addLog(`第 ${state.wave} 轮开始：${describeWave(state.contract.waves[state.wave - 1])}。`, "nh-good");
+        if (!state.testing) renderUi();
+      }
+
+      function buildSpawnQueue(waveNumber) {
+        const queue = [];
+        let t = 0.8;
+        for (const group of state.contract.waves[waveNumber - 1]) {
+          t += group.delay || 0;
+          for (let i = 0; i < group.count; i += 1) {
+            queue.push({ time: t, type: group.type });
+            t += group.gap;
+          }
+          t += 0.7;
+        }
+        return queue;
+      }
+
+      function describeWave(groups) {
+        return groups.map((group) => `${enemies[group.type].mark}${group.count}`).join(" · ");
+      }
+
+      function spawnEnemy(type) {
+        const base = enemies[type];
+        const waveScale = 1 + (state.wave - 1) * 0.075;
+        const hp = Math.round(base.hp * state.contract.hp * waveScale);
+        const start = pointAt(0);
+        state.enemies.push({
+          id: nextId(),
+          type,
+          name: base.name,
+          mark: base.mark,
+          dist: 0,
+          x: start.x,
+          y: start.y,
+          hp,
+          maxHp: hp,
+          speed: base.speed * state.contract.enemySpeed,
+          armor: base.armor || 0,
+          reward: Math.max(1, Math.round(base.reward * state.contract.reward)),
+          damage: base.damage,
+          air: Boolean(base.air),
+          boss: Boolean(base.boss),
+          heal: Boolean(base.heal),
+          slow: 0,
+          blocked: 0,
+          healCd: 1.4,
+          dead: false,
+          color: base.color
+        });
+      }
+
+      function update(dt) {
+        if (!state || state.paused || state.mode === "victory" || state.mode === "defeat") return;
+        const step = dt * state.speed;
+        state.elapsed += step;
+        state.cooldowns.sprouts = Math.max(0, state.cooldowns.sprouts - step);
+        state.cooldowns.rocket = Math.max(0, state.cooldowns.rocket - step);
+
+        if (state.mode === "running") {
+          state.waveTime += step;
+          while (state.spawnIndex < state.spawnQueue.length && state.spawnQueue[state.spawnIndex].time <= state.waveTime) {
+            spawnEnemy(state.spawnQueue[state.spawnIndex].type);
+            state.spawnIndex += 1;
+          }
+        }
+
+        updateEnemies(step);
+        updateTowers(step);
+        updateGuards(step);
+        updateProjectiles(step);
+        updateEffects(step);
+
+        state.enemies = state.enemies.filter((enemy) => !enemy.dead);
+        state.projectiles = state.projectiles.filter((projectile) => projectile.life > 0);
+        state.guards = state.guards.filter((guard) => guard.life > 0 && (!guard.towerId || hasTower(guard.towerId)));
+        state.effects = state.effects.filter((effect) => effect.life > 0);
+        state.floaters = state.floaters.filter((floater) => floater.life > 0);
+
+        if (state.lives <= 0 && state.mode !== "defeat") {
+          endGame(false);
+        }
+
+        if (
+          state.mode === "running" &&
+          state.spawnIndex >= state.spawnQueue.length &&
+          state.enemies.length === 0
+        ) {
+          finishWave();
+        }
+
+        if (!state.testing) syncStats();
+      }
+
+      function updateEnemies(dt) {
+        for (const enemy of state.enemies) {
+          if (enemy.dead) continue;
+          enemy.slow = Math.max(0, enemy.slow - dt);
+          enemy.blocked = Math.max(0, enemy.blocked - dt);
+
+          if (enemy.heal) {
+            enemy.healCd -= dt;
+            if (enemy.healCd <= 0) {
+              enemy.healCd = 2.2;
+              let healed = 0;
+              for (const other of state.enemies) {
+                if (other.dead || other.id === enemy.id) continue;
+                if (Math.abs(other.dist - enemy.dist) < 85 && other.hp < other.maxHp) {
+                  other.hp = Math.min(other.maxHp, other.hp + 16);
+                  healed += 1;
+                }
+              }
+              if (healed) addEffect({ type: "ring", x: enemy.x, y: enemy.y, r: 46, color: "rgba(191, 103, 146, 0.25)", life: 0.35 });
+            }
+          }
+
+          const slowFactor = enemy.slow > 0 ? 0.52 : 1;
+          const blockFactor = enemy.blocked > 0 ? 0.05 : 1;
+          enemy.dist += enemy.speed * slowFactor * blockFactor * dt;
+          const pos = pointAt(enemy.dist);
+          enemy.x = pos.x;
+          enemy.y = pos.y + (enemy.air ? Math.sin(state.elapsed * 5.55 + enemy.id) * 8 : 0);
+
+          if (enemy.dist >= state.path.total) {
+            enemy.dead = true;
+            state.lives = Math.max(0, state.lives - enemy.damage);
+            state.leaks += enemy.damage;
+            addFloater(W - 62, pos.y - 16, `-${enemy.damage}`, "#b9453d");
+            addLog(`${enemy.name} 啃到了苗心，苗心 -${enemy.damage}。`, "nh-warn");
+          }
+        }
+      }
+
+      function updateTowers(dt) {
+        for (const slot of state.slots) {
+          if (!slot.tower) continue;
+          const tower = slot.tower;
+          if (tower.type === "barracks") {
+            maintainBarracks(slot, tower);
+            continue;
+          }
+
+          tower.cooldown -= dt;
+          if (tower.cooldown > 0) continue;
+          const stats = towerStats(tower);
+          const target = findTarget(slot, tower, stats);
+          if (!target) continue;
+          fireTower(slot, tower, stats, target);
+          tower.cooldown = stats.cd;
+        }
+      }
+
+      function updateGuards(dt) {
+        for (const guard of state.guards) {
+          guard.life -= dt;
+          guard.attackCd = Math.max(0, guard.attackCd - dt);
+          const target = state.enemies
+            .filter((enemy) => !enemy.dead && !enemy.air && distance(enemy.x, enemy.y, guard.x, guard.y) < guard.range)
+            .sort((a, b) => b.dist - a.dist)[0];
+          if (target) {
+            guard.x += (target.x - guard.x) * Math.min(1, dt * 6);
+            guard.y += (target.y - guard.y) * Math.min(1, dt * 6);
+            target.blocked = Math.max(target.blocked, 0.22);
+            if (guard.attackCd <= 0) {
+              guard.attackCd = 0.62;
+              damageEnemy(target, guard.damage, { magic: false });
+            }
+          } else {
+            guard.x += (guard.homeX - guard.x) * Math.min(1, dt * 4);
+            guard.y += (guard.homeY - guard.y) * Math.min(1, dt * 4);
+          }
+        }
+      }
+
+      function updateProjectiles(dt) {
+        for (const projectile of state.projectiles) {
+          projectile.life -= dt;
+          if (projectile.life <= 0) continue;
+          const target = projectile.targetKind === "enemy"
+            ? state.enemies.find((enemy) => enemy.id === projectile.targetId && !enemy.dead)
+            : state.obstacles.find((obstacle) => obstacle.id === projectile.targetId && !obstacle.dead);
+          if (!target) {
+            projectile.life = 0;
+            continue;
+          }
+          const angle = Math.atan2(target.y - projectile.y, target.x - projectile.x);
+          projectile.x += Math.cos(angle) * projectile.speed * dt;
+          projectile.y += Math.sin(angle) * projectile.speed * dt;
+          const hitRadius = target.r || target.radius || 14;
+          if (distance(projectile.x, projectile.y, target.x, target.y) < hitRadius + projectile.r) {
+            projectile.life = 0;
+            if (projectile.targetKind === "enemy") hitEnemyProjectile(projectile, target);
+            else damageObstacle(target, projectile.damage);
+          }
+        }
+      }
+
+      function updateEffects(dt) {
+        for (const effect of state.effects) effect.life -= dt;
+        for (const floater of state.floaters) {
+          floater.life -= dt;
+          floater.y -= 22 * dt;
+        }
+      }
+
+      function towerStats(tower) {
+        const base = towers[tower.type];
+        const level = tower.level || 1;
+        const commander = commanders[state.commander];
+        return {
+          range: (base.range + (level - 1) * 11) * commander.range,
+          cd: Math.max(0.22, base.cd * (1 - (level - 1) * 0.12)),
+          damage: Math.round(base.damage * (1 + (level - 1) * 0.52) * commander.damage),
+          splash: base.splash ? base.splash + (level - 1) * 8 : 0,
+          slow: base.slow || 0,
+          magic: Boolean(base.magic),
+          canAir: Boolean(base.canAir),
+          projectile: base.projectile || "#f0d27a"
+        };
+      }
+
+      function upgradeCost(tower) {
+        if (!tower || tower.level >= 3) return 0;
+        return Math.round(towers[tower.type].cost * state.contract.towerCost * commanders[state.commander].cost * (0.72 + tower.level * 0.42));
+      }
+
+      function towerCost(type) {
+        return Math.round(towers[type].cost * state.contract.towerCost * commanders[state.commander].cost);
+      }
+
+      function findTarget(slot, tower, stats) {
+        const candidates = state.enemies.filter((enemy) => {
+          if (enemy.dead) return false;
+          if (enemy.air && !stats.canAir) return false;
+          return distance(slot.x, slot.y, enemy.x, enemy.y) <= stats.range;
+        });
+        if (candidates.length) {
+          return {
+            kind: "enemy",
+            item: candidates.sort((a, b) => targetScore(b, tower) - targetScore(a, tower))[0]
+          };
+        }
+
+        const obstacle = state.obstacles
+          .filter((item) => !item.dead && distance(slot.x, slot.y, item.x, item.y) <= stats.range)
+          .sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
+        if (obstacle) return { kind: "obstacle", item: obstacle };
+        return null;
+      }
+
+      function targetScore(enemy, tower) {
+        let score = enemy.dist / state.path.total * 3 + (1 - enemy.hp / enemy.maxHp) * 0.6;
+        if (enemy.boss) score += 1.1;
+        if (enemy.armor > 0 && tower.type === "charm") score += 1.2;
+        if (enemy.air && tower.type === "pea") score += 0.4;
+        if (enemy.speed > 70 && tower.type === "bubble") score += 0.9;
+        return score;
+      }
+
+      function fireTower(slot, tower, stats, target) {
+        const item = target.item;
+        state.projectiles.push({
+          x: slot.x,
+          y: slot.y,
+          targetKind: target.kind,
+          targetId: item.id,
+          speed: target.kind === "obstacle" ? 520 : 460,
+          r: stats.splash ? 7 : 5,
+          damage: stats.damage,
+          splash: stats.splash,
+          slow: stats.slow,
+          magic: stats.magic,
+          color: stats.projectile,
+          life: 1.8
+        });
+      }
+
+      function hitEnemyProjectile(projectile, target) {
+        if (projectile.splash) {
+          addEffect({ type: "burst", x: target.x, y: target.y, r: projectile.splash, color: "rgba(240, 161, 94, 0.34)", life: 0.32 });
+          for (const enemy of state.enemies) {
+            if (enemy.dead || enemy.air) continue;
+            if (distance(enemy.x, enemy.y, target.x, target.y) <= projectile.splash) {
+              if (projectile.slow) enemy.slow = Math.max(enemy.slow, projectile.slow);
+              damageEnemy(enemy, projectile.damage, projectile);
+            }
+          }
+          return;
+        }
+        if (projectile.slow) target.slow = Math.max(target.slow, projectile.slow);
+        damageEnemy(target, projectile.damage, projectile);
+      }
+
+      function damageEnemy(enemy, amount, source) {
+        if (enemy.dead) return;
+        const damage = source.magic ? amount : Math.max(1, amount - enemy.armor);
+        enemy.hp -= damage;
+        if (enemy.hp <= 0) {
+          enemy.dead = true;
+          state.gold += enemy.reward;
+          state.kills += 1;
+          addFloater(enemy.x, enemy.y - 18, `+${enemy.reward}`, "#d9b45b");
+        }
+      }
+
+      function damageObstacle(obstacle, amount) {
+        if (obstacle.dead) return;
+        obstacle.hp -= amount;
+        if (obstacle.hp <= 0) {
+          obstacle.dead = true;
+          const reward = Math.round(obstacle.reward * commanders[state.commander].obstacle);
+          state.gold += reward;
+          addEffect({ type: "burst", x: obstacle.x, y: obstacle.y, r: obstacle.r + 18, color: "rgba(215, 169, 71, 0.3)", life: 0.35 });
+          addFloater(obstacle.x, obstacle.y - 20, `+${reward}`, "#d9b45b");
+          addLog(`清理了${obstacleName(obstacle.kind)}，获得 ${reward} 月露。`, "nh-good");
+          if (!state.testing) renderUi();
+        }
+      }
+
+      function maintainBarracks(slot, tower) {
+        const desired = tower.level >= 3 ? 3 : 2;
+        const existing = state.guards.filter((guard) => guard.towerId === tower.id);
+        if (existing.length >= desired) return;
+        const rally = nearestPathPoint(slot.x, slot.y);
+        const index = existing.length;
+        state.guards.push({
+          id: nextId(),
+          towerId: tower.id,
+          x: slot.x,
+          y: slot.y,
+          homeX: rally.x + (index - 0.5) * 18,
+          homeY: rally.y + (index % 2 ? 14 : -14),
+          range: 36 + tower.level * 4,
+          damage: Math.round(towerStats(tower).damage * 0.72 * commanders[state.commander].guard),
+          attackCd: nextRandom(0, 0.4),
+          life: 9999,
+          color: "#b49254"
+        });
+      }
+
+      function castAbility(key, x, y) {
+        const ability = abilities[key];
+        if (!ability || state.paused || state.cooldowns[key] > 0) return;
+        if (key === "rocket") {
+          const radius = 86;
+          let hit = 0;
+          for (const enemy of state.enemies) {
+            if (enemy.dead) continue;
+            if (distance(enemy.x, enemy.y, x, y) <= radius) {
+              damageEnemy(enemy, 86 + state.wave * 8, { magic: true });
+              enemy.slow = Math.max(enemy.slow, 1.2);
+              hit += 1;
+            }
+          }
+          addEffect({ type: "burst", x, y, r: radius, color: "rgba(240, 161, 94, 0.42)", life: 0.42 });
+          addLog(`天坠胡苗心命中 ${hit} 个目标。`, hit ? "nh-good" : "nh-warn");
+        }
+        if (key === "sprouts") {
+          const point = nearestPathPoint(x, y);
+          for (let i = 0; i < 2; i += 1) {
+            state.guards.push({
+              id: nextId(),
+              x: point.x + (i ? 16 : -16),
+              y: point.y + (i ? 12 : -12),
+              homeX: point.x + (i ? 16 : -16),
+              homeY: point.y + (i ? 12 : -12),
+              range: 40,
+              damage: Math.round((10 + state.wave * 2) * commanders[state.commander].guard),
+              attackCd: 0,
+              life: 9,
+              color: "#6fae5a"
+            });
+          }
+          addEffect({ type: "ring", x: point.x, y: point.y, r: 54, color: "rgba(120, 183, 99, 0.25)", life: 0.4 });
+          addLog("蔓条援兵在路边扎根。", "nh-good");
+        }
+        state.cooldowns[key] = ability.cooldown * state.contract.abilityCooldown * commanders[state.commander].cooldown;
+        state.abilitiesUsed += 1;
+        state.abilityMode = null;
+        if (!state.testing) renderUi();
+      }
+
+      function finishWave() {
+        if (state.lives <= 0) return;
+        if (state.wave >= state.contract.waves.length) {
+          endGame(true);
+          return;
+        }
+        state.mode = "planning";
+        const bonus = state.contract.waveBonus + state.wave * 4 + (state.leaks === 0 ? 8 : 0);
+        state.gold += bonus;
+        addLog(`第 ${state.wave} 轮守住了，奖励 ${bonus} 月露。`, "nh-good");
+        if (!state.testing) renderUi();
+      }
+
+      function scoreRun(won) {
+        const stars = won ? 1 + (state.lives >= state.contract.starLives ? 1 : 0) + (state.abilitiesUsed <= state.contract.starAbilities ? 1 : 0) : 0;
+        return { won, stars, lives: state.lives, abilitiesUsed: state.abilitiesUsed, kills: state.kills, waves: state.wave };
+      }
+
+      function endGame(won) {
+        state.mode = won ? "victory" : "defeat";
+        state.result = scoreRun(won);
+        if (state.testing) return;
+        if (won) {
+          const index = state.contract.index;
+          profile.stars[index] = Math.max(profile.stars[index], state.result.stars);
+          profile.bestLives[index] = Math.max(profile.bestLives[index], state.lives);
+          profile.clears[index] += 1;
+          profile.unlocked = Math.max(profile.unlocked, Math.min(11, index + 1));
+          profile.commander = selectedCommander;
+          saveProfile();
+        }
+        ui.modalKicker.textContent = won ? "胜利" : "苗心被啃";
+        ui.modalTitle.textContent = won ? `${state.contract.name}守住了` : "篱线失守";
+        ui.modalBody.innerHTML = `
+          <p>${won ? `六轮验收完成，剩余苗心 ${state.lives}，使用机能 ${state.abilitiesUsed} 次。` : "幼虫啃穿了最后的篱叶。调整地基、先清墟或多建减速塔再试一次。"}</p>
+          ${won ? `<p><strong>${"★".repeat(state.result.stars)}${"☆".repeat(3 - state.result.stars)}</strong>　通关星、苗心线 ${state.contract.starLives}、机能预算 ${state.contract.starAbilities}。</p>` : ""}
+          <div class="nh-action-grid"><button class="nh-tool-button" type="button" id="nhVeilRestart">重新布防</button>${won && state.contract.index < 11 ? '<button class="nh-key-button" type="button" id="nhVeilNext">下一契约</button>' : ""}</div>
+        `;
+        ui.modal.classList.remove("nh-veiled");
+        document.getElementById("nhVeilRestart").addEventListener("click", () => {
+          ui.modal.classList.add("nh-veiled");
+          newGame();
+        });
+        const nextButton = document.getElementById("nhVeilNext");
+        if (nextButton) nextButton.addEventListener("click", () => {
+          ui.modal.classList.add("nh-veiled");
+          selectedContract = Math.min(11, state.contract.index + 1);
+          newGame();
+        });
+        renderUi();
+      }
+
+      function buildTower(type) {
+        const slot = selectedSlot();
+        if (!slot) return;
+        buildTowerAt(slot.id, type);
+      }
+
+      function buildTowerAt(slotId, type) {
+        const slot = state.slots[slotId];
+        const cost = towerCost(type);
+        if (!slot || slot.tower || isSlotLocked(slot) || !isTowerUnlocked(type) || state.gold < cost || state.mode !== "planning") return false;
+        const def = towers[type];
+        state.gold -= cost;
+        slot.tower = {
+          id: nextId(),
+          type,
+          level: 1,
+          cooldown: nextRandom(0.05, 0.35)
+        };
+        state.buildActions += 1;
+        addLog(`建造 ${def.name}。`);
+        if (!state.testing) renderUi();
+        return true;
+      }
+
+      function upgradeSelected() {
+        const slot = selectedSlot();
+        if (!slot) return;
+        upgradeTowerAt(slot.id);
+      }
+
+      function upgradeTowerAt(slotId) {
+        const slot = state.slots[slotId];
+        if (!slot || !slot.tower || state.mode !== "planning") return false;
+        const cost = upgradeCost(slot.tower);
+        if (!cost || state.gold < cost) return false;
+        state.gold -= cost;
+        slot.tower.level += 1;
+        state.buildActions += 1;
+        addFloater(slot.x, slot.y - 32, `Lv.${slot.tower.level}`, "#d9b45b");
+        addLog(`${towers[slot.tower.type].name} 升到 Lv.${slot.tower.level}。`, "nh-good");
+        if (slot.tower.type === "barracks") {
+          state.guards = state.guards.filter((guard) => guard.towerId !== slot.tower.id);
+        }
+        if (!state.testing) renderUi();
+        return true;
+      }
+
+      function sellSelected() {
+        if (state.mode !== "planning") return;
+        const slot = selectedSlot();
+        if (!slot || !slot.tower) return;
+        const tower = slot.tower;
+        const refund = Math.round(towerCost(tower.type) * (0.58 + (tower.level - 1) * 0.2));
+        state.gold += refund;
+        state.guards = state.guards.filter((guard) => guard.towerId !== tower.id);
+        slot.tower = null;
+        addLog(`出售塔，返还 ${refund} 月露。`);
+        renderUi();
+      }
+
+      function selectedSlot() {
+        if (state.selectedSlot === null) return null;
+        return state.slots[state.selectedSlot] || null;
+      }
+
+      function isSlotLocked(slot) {
+        if (!slot.lockedBy) return false;
+        const obstacle = state.obstacles.find((item) => item.id === slot.lockedBy);
+        return Boolean(obstacle && !obstacle.dead);
+      }
+
+      function isTowerUnlocked(type) {
+        const unlock = towers[type].unlockWave || 1;
+        return state.wave + 1 >= unlock || state.wave >= unlock;
+      }
+
+      function hasTower(towerId) {
+        return state.slots.some((slot) => slot.tower && slot.tower.id === towerId);
+      }
+
+      function syncStats() {
+        ui.wave.textContent = `${state.wave}/${state.contract.waves.length}`;
+        ui.gold.textContent = Math.floor(state.gold);
+        ui.life.textContent = state.lives;
+        const cleared = state.obstacles.filter((item) => item.dead).length;
+        ui.clear.textContent = `${cleared}/${state.obstacles.length}`;
+        const starCount = state.result?.stars ?? (state.lives <= 0 ? 0 : 1 + (state.lives >= state.contract.starLives ? 1 : 0) + (state.abilitiesUsed <= state.contract.starAbilities ? 1 : 0));
+        ui.stars.textContent = "★".repeat(starCount) + "☆".repeat(3 - starCount);
+        ui.speedTag.textContent = `${state.speed}x`;
+      }
+
+      function renderUi() {
+        syncStats();
+        renderMapButtons();
+        renderDifficultyButtons();
+        renderShop();
+        renderSelectedPanel();
+        renderAbilities();
+        renderWaveControls();
+        ui.log.innerHTML = state.logs.map((entry) => `<li class="${entry.type}">${entry.text}</li>`).join("");
+      }
+
+      function renderMapButtons() {
+        const locked = state.wave > 0 || state.mode === "running";
+        ui.mapLockHint.textContent = `第 ${state.contract.chapter + 1} 区 · ${maps[state.contract.map].short}`;
+        ui.mapButtons.innerHTML = CONTRACTS.map((contract, index) => `
+          <button class="nh-map-button ${selectedContract === index ? "nh-on" : ""}" type="button" data-nh-contract="${index}" title="${contract.name}：${contract.rule}" ${locked || index > profile.unlocked ? "disabled" : ""}>
+            ${String(index + 1).padStart(2, "0")} ${contract.short}<br>${index > profile.unlocked ? "锁定" : `${"★".repeat(profile.stars[index])}${"☆".repeat(3 - profile.stars[index])}`}
+          </button>
+        `).join("");
+        ui.mapButtons.querySelectorAll("[data-nh-contract]").forEach((button) => {
+          button.addEventListener("click", () => {
+            selectedContract = Number(button.dataset.nhContract);
+            newGame();
+          });
+        });
+      }
+
+      function renderDifficultyButtons() {
+        const locked = state.wave > 0 || state.mode === "running";
+        ui.difficultyButtons.innerHTML = Object.entries(commanders).map(([key, commander]) => `
+          <button class="nh-keeper-button ${selectedCommander === key ? "nh-on" : ""}" type="button" data-nh-commander="${key}" title="${commander.desc}" ${locked ? "disabled" : ""}>
+            ${commander.short} ${commander.name}
+          </button>
+        `).join("");
+        ui.difficultyButtons.querySelectorAll("[data-nh-commander]").forEach((button) => {
+          button.addEventListener("click", () => {
+            selectedCommander = button.dataset.nhCommander;
+            profile.commander = selectedCommander;
+            saveProfile();
+            newGame();
+          });
+        });
+      }
+
+      function renderShop() {
+        const slot = selectedSlot();
+        const canBuild = slot && !slot.tower && !isSlotLocked(slot) && state.mode === "planning";
+        ui.slotHint.textContent = slot ? (isSlotLocked(slot) ? "被障碍挡住" : slot.tower ? "已建塔" : "可建造") : "先点地基";
+        ui.towerShop.innerHTML = Object.entries(towers).map(([key, tower]) => {
+          const unlocked = isTowerUnlocked(key);
+          const cost = towerCost(key);
+          const disabled = !canBuild || !unlocked || state.gold < cost;
+          return `
+            <button class="nh-shop-card ${!disabled ? "nh-available" : ""} ${!unlocked ? "nh-locked" : ""}" type="button" data-nh-build="${key}" ${disabled ? "disabled" : ""}>
+              <span class="nh-tower-mark">${tower.mark}</span>
+              <span>
+                <span class="nh-shop-title"><strong>${tower.name}</strong><span class="nh-cost">${unlocked ? cost : `第${tower.unlockWave}轮`}</span></span>
+                <p>${tower.desc}</p>
+              </span>
+            </button>
+          `;
+        }).join("");
+        ui.towerShop.querySelectorAll("[data-nh-build]").forEach((button) => {
+          button.addEventListener("click", () => {
+            if (cardDrag.suppressClick) {
+              cardDrag.suppressClick = false;
+              return;
+            }
+            buildTower(button.dataset.nhBuild);
+          });
+          if (!button.disabled)
+            button.addEventListener("pointerdown", (event) =>
+              startCardDrag(event, button.dataset.nhBuild),
+            );
+        });
+      }
+
+      function renderSelectedPanel() {
+        const slot = selectedSlot();
+        if (!slot) {
+          ui.selectedTag.textContent = "未选择";
+          ui.selected.innerHTML = "<p>点击圃圃上的圆形地基来建造塔。点击障碍物可以查看清墟奖励。</p>";
+          return;
+        }
+        if (isSlotLocked(slot)) {
+          const obstacle = state.obstacles.find((item) => item.id === slot.lockedBy);
+          ui.selectedTag.textContent = "被占用";
+          ui.selected.innerHTML = `<strong>地基被${obstacleName(obstacle.kind)}挡住</strong><p>附近塔会在空闲时清理它。清理后返还 ${Math.round(obstacle.reward * commanders[state.commander].obstacle)} 月露并解锁该地基。</p>`;
+          return;
+        }
+        if (!slot.tower) {
+          ui.selectedTag.textContent = "空地基";
+          ui.selected.innerHTML = `<strong>空地基</strong><p>选择一种塔建造。开局通常只够建两座塔，建议一座伤害塔配一座减速或兵营。</p>`;
+          return;
+        }
+        const tower = slot.tower;
+        const def = towers[tower.type];
+        const stats = towerStats(tower);
+        const cost = upgradeCost(tower);
+        ui.selectedTag.textContent = `Lv.${tower.level}`;
+        ui.selected.innerHTML = `
+          <strong>${def.name} Lv.${tower.level}</strong>
+          <p>伤害 ${stats.damage}，范围 ${Math.round(stats.range)}${stats.splash ? `，溅射 ${stats.splash}` : ""}${stats.slow ? "，附带减速" : ""}。</p>
+          <div class="nh-detail-actions">
+            <button class="nh-tool-button" type="button" id="nhUpgradeButton" ${!cost || state.gold < cost ? "disabled" : ""}>${cost ? `升级 ${cost}` : "已满级"}</button>
+            <button class="nh-tool-button" type="button" id="nhSellButton">出售</button>
+          </div>
+        `;
+        document.getElementById("nhUpgradeButton").addEventListener("click", upgradeSelected);
+        document.getElementById("nhSellButton").addEventListener("click", sellSelected);
+      }
+
+      function renderAbilities() {
+        ui.abilityHint.textContent = state.abilityMode ? `${abilities[state.abilityMode].name} 待选点` : `三星预算 ${state.abilitiesUsed}/${state.contract.starAbilities}`;
+        ui.abilities.innerHTML = Object.entries(abilities).map(([key, ability]) => {
+          const cd = Math.ceil(state.cooldowns[key]);
+          const disabled = state.mode !== "running" || cd > 0;
+          return `
+            <button class="nh-tool-button" type="button" data-nh-ability="${key}" ${disabled ? "disabled" : ""}>
+              ${ability.mark} ${cd > 0 ? `${cd}s` : ability.name}
+            </button>
+          `;
+        }).join("");
+        ui.abilities.querySelectorAll("[data-nh-ability]").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.abilityMode = button.dataset.nhAbility;
+            renderUi();
+          });
+        });
+      }
+
+      function renderWaveControls() {
+        if (state.mode === "victory") {
+          ui.waveButton.textContent = "已然过关";
+          ui.waveButton.disabled = true;
+        } else if (state.mode === "defeat") {
+          ui.waveButton.textContent = "重新开始";
+          ui.waveButton.disabled = false;
+        } else if (state.mode === "running") {
+          ui.waveButton.textContent = `第 ${state.wave} 轮进行中`;
+          ui.waveButton.disabled = true;
+        } else {
+          ui.waveButton.textContent = `开始第 ${state.wave + 1} 轮`;
+          ui.waveButton.disabled = false;
+        }
+        ui.speedButton.textContent = state.speed === 1 ? "切换 2x" : "切换 1x";
+        ui.pauseButton.textContent = state.paused ? "继续" : "暂停";
+      }
+
+      function pointerToWorld(event) {
+        const rect = canvas.getBoundingClientRect();
+        const nx = (event.clientX - rect.left) / rect.width * W;
+        const ny = (event.clientY - rect.top) / rect.height * H;
+        return {
+          x: (nx - cam.x) / cam.zoom,
+          y: (ny - cam.y) / cam.zoom
+        };
+      }
+
+      function handleCanvasClick(event) {
+        if (!state || pinch.active) return;
+        const point = pointerToWorld(event);
+        if (state.abilityMode) {
+          castAbility(state.abilityMode, point.x, point.y);
+          return;
+        }
+        const slot = state.slots.find((item) => distance(point.x, point.y, item.x, item.y) <= 28);
+        if (slot) {
+          state.selectedSlot = slot.id;
+          state.selectedObstacle = null;
+          renderUi();
+          return;
+        }
+        const obstacle = state.obstacles.find((item) => !item.dead && distance(point.x, point.y, item.x, item.y) <= item.r + 8);
+        if (obstacle) {
+          state.selectedSlot = null;
+          state.selectedObstacle = obstacle.id;
+          ui.selectedTag.textContent = "障碍";
+          ui.selected.innerHTML = `<strong>${obstacleName(obstacle.kind)}</strong><p>耐久 ${Math.max(0, Math.ceil(obstacle.hp))}/${obstacle.maxHp}，清理奖励 ${Math.round(obstacle.reward * commanders[state.commander].obstacle)} 月露。塔空闲时会自动攻击障碍物。</p>`;
+          return;
+        }
+        state.selectedSlot = null;
+        state.selectedObstacle = null;
+        renderUi();
+      }
+
+      function draw() {
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.restore();
+        const sx = canvas.width / dpr / W;
+        const sy = canvas.height / dpr / H;
+        ctx.save();
+        ctx.scale(dpr * sx, dpr * sy);
+        ctx.translate(cam.x, cam.y);
+        ctx.scale(cam.zoom, cam.zoom);
+        drawMap();
+        drawObstacles();
+        drawSlots();
+        drawGuards();
+        drawEnemies();
+        drawProjectiles();
+        drawEffects();
+        drawOverlay();
+        ctx.restore();
+      }
+
+      function drawMap() {
+        ctx.fillStyle = "#0d1f17";
+        ctx.fillRect(0, 0, W, H);
+        ctx.strokeStyle = "rgba(246, 239, 220, 0.05)";
+        ctx.lineWidth = 1;
+        for (let x = 0; x < W; x += 32) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, H);
+          ctx.stroke();
+        }
+        for (let y = 0; y < H; y += 32) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(W, y);
+          ctx.stroke();
+        }
+
+        ctx.save();
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.strokeStyle = "rgba(201, 162, 39, 0.3)";
+        ctx.lineWidth = 58;
+        pathStroke();
+        ctx.strokeStyle = "rgba(53, 112, 92, 0.45)";
+        ctx.lineWidth = 40;
+        pathStroke();
+        ctx.setLineDash([18, 16]);
+        ctx.strokeStyle = "#d9b45b";
+        ctx.lineWidth = 4;
+        pathStroke();
+        ctx.setLineDash([]);
+        ctx.restore();
+
+        const start = state.path.points[0];
+        const end = state.path.points[state.path.points.length - 1];
+        ctx.fillStyle = "#f6efdc";
+        ctx.font = "900 16px sans-serif";
+        ctx.fillText("入口", Math.max(22, start.x + 36), start.y - 42);
+        drawRadish(end.x - 72, end.y, 1.2);
+      }
+
+      function pathStroke() {
+        ctx.beginPath();
+        for (let i = 0; i < state.path.points.length; i += 1) {
+          const p = state.path.points[i];
+          if (i === 0) ctx.moveTo(p.x, p.y);
+          else ctx.lineTo(p.x, p.y);
+        }
+        ctx.stroke();
+      }
+
+      function drawObstacles() {
+        for (const obstacle of state.obstacles) {
+          if (obstacle.dead) continue;
+          ctx.save();
+          if (obstacle.kind === "stone") {
+            ctx.fillStyle = "#8a8272";
+            ctx.beginPath();
+            ctx.ellipse(obstacle.x, obstacle.y, obstacle.r + 6, obstacle.r - 2, -0.25, 0, Math.PI * 2);
+            ctx.fill();
+          } else if (obstacle.kind === "crate") {
+            ctx.fillStyle = "#9c6b4a";
+            roundRect(obstacle.x - obstacle.r, obstacle.y - obstacle.r, obstacle.r * 2, obstacle.r * 2, 5);
+            ctx.fill();
+            ctx.strokeStyle = "#6e4e34";
+            ctx.beginPath();
+            ctx.moveTo(obstacle.x - obstacle.r, obstacle.y - obstacle.r);
+            ctx.lineTo(obstacle.x + obstacle.r, obstacle.y + obstacle.r);
+            ctx.moveTo(obstacle.x + obstacle.r, obstacle.y - obstacle.r);
+            ctx.lineTo(obstacle.x - obstacle.r, obstacle.y + obstacle.r);
+            ctx.stroke();
+          } else if (obstacle.kind === "mill") {
+            ctx.fillStyle = "#cdc07a";
+            roundRect(obstacle.x - 18, obstacle.y - 18, 36, 36, 5);
+            ctx.fill();
+            ctx.strokeStyle = "#f6efdc";
+            ctx.lineWidth = 4;
+            for (let i = 0; i < 4; i += 1) {
+              const a = Math.PI / 2 * i + performance.now() / 1200;
+              ctx.beginPath();
+              ctx.moveTo(obstacle.x, obstacle.y);
+              ctx.lineTo(obstacle.x + Math.cos(a) * 36, obstacle.y + Math.sin(a) * 36);
+              ctx.stroke();
+            }
+          } else if (obstacle.kind === "barrel") {
+            ctx.fillStyle = "#a85f38";
+            roundRect(obstacle.x - obstacle.r, obstacle.y - obstacle.r, obstacle.r * 2, obstacle.r * 2, 13);
+            ctx.fill();
+          } else {
+            ctx.fillStyle = "#4f8260";
+            ctx.beginPath();
+            ctx.arc(obstacle.x, obstacle.y, obstacle.r, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.strokeStyle = "#f6efdc";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          drawBar(obstacle.x - 25, obstacle.y - obstacle.r - 12, 50, 5, obstacle.hp / obstacle.maxHp, "#d9b45b");
+          ctx.restore();
+        }
+      }
+
+      function drawSlots() {
+        for (const slot of state.slots) {
+          const locked = isSlotLocked(slot);
+          const selected = state.selectedSlot === slot.id;
+          ctx.save();
+          if (slot.tower) {
+            const def = towers[slot.tower.type];
+            const stats = towerStats(slot.tower);
+            if (selected) {
+              ctx.fillStyle = "rgba(201, 162, 39, 0.14)";
+              ctx.beginPath();
+              ctx.arc(slot.x, slot.y, stats.range, 0, Math.PI * 2);
+              ctx.fill();
+            }
+            ctx.fillStyle = def.color;
+            roundRect(slot.x - 22, slot.y - 22, 44, 44, 9);
+            ctx.fill();
+            ctx.strokeStyle = selected ? "#f6efdc" : "#16241b";
+            ctx.lineWidth = selected ? 4 : 2;
+            ctx.stroke();
+            ctx.fillStyle = "#fffaeb";
+            ctx.font = "900 17px sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(def.mark, slot.x, slot.y + 1);
+            ctx.fillStyle = "#f6efdc";
+            ctx.font = "800 11px sans-serif";
+            ctx.fillText(`Lv.${slot.tower.level}`, slot.x, slot.y + 35);
+          } else {
+            ctx.fillStyle = locked ? "rgba(74, 88, 78, 0.68)" : "rgba(255, 250, 235, 0.86)";
+            ctx.beginPath();
+            ctx.arc(slot.x, slot.y, 24, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = selected ? "#d9b45b" : locked ? "#5f7062" : "#64796a";
+            ctx.lineWidth = selected ? 4 : 2;
+            ctx.stroke();
+            ctx.fillStyle = locked ? "#b9bda8" : "#35705c";
+            ctx.font = "900 18px sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(locked ? "锁" : "+", slot.x, slot.y + 1);
+          }
+          ctx.restore();
+        }
+      }
+
+      function drawEnemies() {
+        const sorted = [...state.enemies].sort((a, b) => a.y - b.y);
+        for (const enemy of sorted) {
+          ctx.save();
+          if (enemy.air) {
+            ctx.fillStyle = enemy.color;
+            ctx.beginPath();
+            ctx.moveTo(enemy.x, enemy.y - 16);
+            ctx.lineTo(enemy.x + 22, enemy.y);
+            ctx.lineTo(enemy.x, enemy.y + 16);
+            ctx.lineTo(enemy.x - 22, enemy.y);
+            ctx.closePath();
+            ctx.fill();
+          } else if (enemy.boss) {
+            ctx.fillStyle = enemy.color;
+            roundRect(enemy.x - 28, enemy.y - 23, 56, 46, 12);
+            ctx.fill();
+          } else {
+            ctx.fillStyle = enemy.color;
+            ctx.beginPath();
+            ctx.arc(enemy.x, enemy.y, 15, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.strokeStyle = "#1e2b23";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          ctx.fillStyle = "#1e2b23";
+          ctx.font = "900 12px sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(enemy.mark, enemy.x, enemy.y + 1);
+          ctx.textBaseline = "alphabetic";
+          drawBar(enemy.x - 21, enemy.y - 28, 42, 5, enemy.hp / enemy.maxHp, enemy.slow > 0 ? "#8fd0e0" : "#7fae5a");
+          if (enemy.blocked > 0) {
+            ctx.strokeStyle = "rgba(246, 239, 220, 0.85)";
+            ctx.beginPath();
+            ctx.arc(enemy.x, enemy.y, enemy.boss ? 32 : 20, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+          ctx.restore();
+        }
+      }
+
+      function drawGuards() {
+        for (const guard of state.guards) {
+          ctx.save();
+          ctx.globalAlpha = Math.min(1, guard.life / 1.5);
+          ctx.fillStyle = guard.color;
+          roundRect(guard.x - 10, guard.y - 14, 20, 28, 6);
+          ctx.fill();
+          ctx.strokeStyle = "#f6efdc";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          ctx.fillStyle = "#1e2b23";
+          ctx.font = "900 12px sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("卒", guard.x, guard.y + 1);
+          ctx.restore();
+        }
+      }
+
+      function drawProjectiles() {
+        for (const projectile of state.projectiles) {
+          ctx.fillStyle = projectile.color;
+          ctx.beginPath();
+          ctx.arc(projectile.x, projectile.y, projectile.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      function drawEffects() {
+        for (const effect of state.effects) {
+          ctx.save();
+          ctx.globalAlpha = clamp(effect.life / 0.4, 0, 1);
+          if (effect.type === "burst") {
+            ctx.fillStyle = effect.color;
+            ctx.beginPath();
+            ctx.arc(effect.x, effect.y, effect.r * (1.2 - effect.life * 0.35), 0, Math.PI * 2);
+            ctx.fill();
+          }
+          if (effect.type === "ring") {
+            ctx.strokeStyle = effect.color;
+            ctx.lineWidth = 8;
+            ctx.beginPath();
+            ctx.arc(effect.x, effect.y, effect.r, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+          ctx.restore();
+        }
+
+        for (const floater of state.floaters) {
+          ctx.save();
+          ctx.globalAlpha = clamp(floater.life / 0.9, 0, 1);
+          ctx.fillStyle = floater.color;
+          ctx.font = "900 15px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(floater.text, floater.x, floater.y);
+          ctx.restore();
+        }
+      }
+
+      function drawOverlay() {
+        if (state.abilityMode) {
+          ctx.save();
+          ctx.fillStyle = "rgba(10, 23, 18, 0.78)";
+          roundRect(300, 18, 360, 54, 8);
+          ctx.fill();
+          ctx.fillStyle = "#fffaeb";
+          ctx.font = "900 18px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(`选择 ${abilities[state.abilityMode].name} 的落点`, 480, 52);
+          ctx.restore();
+        }
+        if (state.mode === "planning") {
+          ctx.save();
+          ctx.fillStyle = "rgba(10, 23, 18, 0.72)";
+          roundRect(315, 236, 330, 104, 8);
+          ctx.fill();
+          ctx.fillStyle = "#fffaeb";
+          ctx.font = "900 26px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(state.wave === 0 ? state.contract.name : `准备第 ${state.wave + 1} 轮`, 480, 276);
+          ctx.font = "700 14px sans-serif";
+          ctx.fillText(`苗心线 ${state.contract.starLives} · 机能预算 ${state.contract.starAbilities}`, 480, 310);
+          ctx.restore();
+        }
+      }
+
+      function drawRadish(x, y, scale) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.scale(scale, scale);
+        ctx.fillStyle = "#f6efdc";
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 32, 42, 0.22, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#d08a4e";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(-12, -6);
+        ctx.lineTo(13, -10);
+        ctx.moveTo(-14, 9);
+        ctx.lineTo(9, 6);
+        ctx.stroke();
+        ctx.fillStyle = "#6fae5a";
+        ctx.beginPath();
+        ctx.ellipse(-6, -44, 10, 24, -0.4, 0, Math.PI * 2);
+        ctx.ellipse(10, -44, 10, 24, 0.45, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#1e2b23";
+        ctx.font = "900 18px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("苗心", 0, 58);
+        ctx.restore();
+      }
+
+      function drawBar(x, y, w, h, pct, color) {
+        ctx.fillStyle = "rgba(30, 43, 35, 0.78)";
+        roundRect(x, y, w, h, h / 2);
+        ctx.fill();
+        ctx.fillStyle = color;
+        roundRect(x, y, Math.max(0, w * clamp(pct, 0, 1)), h, h / 2);
+        ctx.fill();
+      }
+
+      function addEffect(effect) {
+        state.effects.push(effect);
+      }
+
+      function addFloater(x, y, text, color) {
+        state.floaters.push({ x, y, text, color, life: 0.9 });
+      }
+
+      function obstacleName(kind) {
+        return {
+          stone: "石垛",
+          crate: "木筐",
+          grass: "草簇",
+          barrel: "木瓮",
+          mill: "风车遗架"
+        }[kind] || "障碍物";
+      }
+
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+        canvas.width = Math.floor(rect.width * dpr);
+        canvas.height = Math.floor(rect.height * dpr);
+        draw();
+      }
+
+      function loop(time) {
+        const dt = Math.min(0.05, (time - lastTime) / 1000 || 0);
+        lastTime = time;
+        update(dt);
+        draw();
+        animationId = requestAnimationFrame(loop);
+      }
+
+      function showHelp() {
+        ui.modalKicker.textContent = "十二线守则";
+        ui.modalTitle.textContent = "固定契约怎么守";
+        ui.modalBody.innerHTML = `
+          <p>十二份契约各自锁定圃区、六轮敌群、初始月露、苗心与敌军倍率，相同守篱人与操作会得到相同结果。完成当前契约才能解锁下一条防线。</p>
+          <p>塔会优先攻击敌人；没有敌人时会清理范围内障碍物。清墟会给月露，有些障碍物还会解锁地基。</p>
+          <p>豆荚弩稳定，露泡塔减速，灯笼瓜炮清群，符灯塔破甲打空中，禾秆兵营能在路上阻挡地面目标。三星分别要求通关、达到公开苗心线、机能使用不超过预算。</p>
+          <p>园丁长擅长经济，提灯员强化射界，篱门卫提高容错与机能效率；三名守篱人会形成不同布防路线。</p>
+          <button class="nh-key-button" type="button" id="nhCloseHelp">知晓了</button>
+        `;
+        ui.modal.classList.remove("nh-veiled");
+        document.getElementById("nhCloseHelp").addEventListener("click", () => ui.modal.classList.add("nh-veiled"));
+      }
+
+      function showArchive() {
+        const totalStars = profile.stars.reduce((sum, value) => sum + value, 0);
+        ui.modalKicker.textContent = "RADISH2";
+        ui.modalTitle.textContent = "守望战役卷宗";
+        ui.modalBody.innerHTML = `
+          <p>已解锁 ${profile.unlocked + 1}/12 条防线，累计 ${totalStars}/36 星。卷宗码带校验，可跨设备恢复契约、星级、最佳苗心和守篱人。</p>
+          <textarea id="nhArchiveOutput" class="nh-archive-code" readonly>${encodeArchive()}</textarea>
+          <div class="nh-action-grid" style="margin:8px 0 14px"><button class="nh-tool-button" id="nhCopyArchive" type="button">复制卷宗</button><button class="nh-tool-button" id="nhCloseArchive" type="button">关闭</button></div>
+          <textarea id="nhArchiveInput" class="nh-archive-code" placeholder="粘贴 RADISH2 卷宗码"></textarea>
+          <button class="nh-key-button" id="nhImportArchive" type="button" style="margin-top:8px">校验并导入</button>
+        `;
+        ui.modal.classList.remove("nh-veiled");
+        document.getElementById("nhCloseArchive").addEventListener("click", () => ui.modal.classList.add("nh-veiled"));
+        document.getElementById("nhCopyArchive").addEventListener("click", async () => {
+          const field = document.getElementById("nhArchiveOutput");
+          try { await navigator.clipboard.writeText(field.value); } catch { field.select(); }
+        });
+        document.getElementById("nhImportArchive").addEventListener("click", () => {
+          try {
+            profile = decodeArchive(document.getElementById("nhArchiveInput").value);
+            saveProfile();
+            selectedContract = profile.unlocked;
+            selectedCommander = profile.commander;
+            ui.modal.classList.add("nh-veiled");
+            newGame();
+          } catch (error) {
+            document.getElementById("nhArchiveInput").value = error.message;
+          }
+        });
+      }
+
+      const REFERENCE_SLOTS = {
+        brook: [1, 4, 2, 0, 6, 3, 5],
+        windmill: [1, 2, 4, 0, 6, 3, 5],
+        terrace: [2, 4, 0, 6, 3, 1, 5]
+      };
+
+      const REFERENCE_TYPES = {
+        swarm: ["mortar", "bubble", "pea", "charm", "barracks", "mortar", "pea"],
+        rush: ["bubble", "pea", "mortar", "charm", "barracks", "pea", "mortar"],
+        armor: ["mortar", "pea", "charm", "bubble", "barracks", "charm", "pea"],
+        air: ["pea", "bubble", "charm", "pea", "mortar", "charm", "pea"],
+        heal: ["mortar", "pea", "charm", "bubble", "barracks", "mortar", "pea"],
+        mixed: ["mortar", "bubble", "pea", "charm", "barracks", "mortar", "pea"],
+        siege: ["mortar", "charm", "bubble", "pea", "barracks", "mortar", "charm"]
+      };
+
+      function referencePlan() {
+        const slots = REFERENCE_SLOTS[state.contract.map];
+        const types = REFERENCE_TYPES[state.contract.focus];
+        return slots.map((slot, index) => ({ slot, type: types[index] }));
+      }
+
+      function prepareReferenceDefense() {
+        const plan = referencePlan();
+        let towerCount = state.slots.filter((slot) => slot.tower).length;
+        const targetCount = Math.min(2 + state.wave, 6);
+        for (const item of plan) {
+          if (towerCount >= targetCount) break;
+          const slot = state.slots[item.slot];
+          if (slot.tower || isSlotLocked(slot) || !isTowerUnlocked(item.type)) continue;
+          if (buildTowerAt(item.slot, item.type)) towerCount += 1;
+        }
+        for (let level = 1; level <= 2; level += 1) {
+          for (const item of plan) {
+            const tower = state.slots[item.slot].tower;
+            if (tower && tower.level === level) upgradeTowerAt(item.slot);
+          }
+        }
+      }
+
+      function beginTest(index = 0, commander = CONTRACTS[index].recommended) {
+        selectedContract = index;
+        selectedCommander = commander;
+        newGame({ testing: true });
+        return state;
+      }
+
+      function simulateReference(index, commander = CONTRACTS[index].recommended) {
+        beginTest(index, commander);
+        let guard = 0;
+        while (state.mode !== "victory" && state.mode !== "defeat" && guard < 12) {
+          prepareReferenceDefense();
+          startWave();
+          let frames = 0;
+          while (state.mode === "running" && frames < 9000) {
+            update(0.04);
+            frames += 1;
+          }
+          if (frames >= 9000) throw Error(`标准布防超时：${state.contract.name}`);
+          guard += 1;
+        }
+        return { id: state.contract.id, name: state.contract.name, commander: state.commander, won: state.mode === "victory", stars: state.result?.stars || 0, lives: state.lives, abilitiesUsed: state.abilitiesUsed, kills: state.kills, waves: state.wave, towers: state.slots.filter((slot) => slot.tower).length, buildActions: state.buildActions, gold: Math.floor(state.gold) };
+      }
+
+      function validateContent() {
+        const allWaves = CONTRACTS.flatMap((contract) => contract.waves);
+        const deployments = allWaves.reduce((total, wave) => total + wave.reduce((sum, group) => sum + group.count, 0), 0);
+        return {
+          contracts: CONTRACTS.length,
+          chapters: new Set(CONTRACTS.map((contract) => contract.chapter)).size,
+          waves: allWaves.length,
+          deployments,
+          towerTypes: Object.keys(towers).length,
+          enemyTypes: Object.keys(enemies).length,
+          commanders: Object.keys(commanders).length,
+          maps: Object.keys(maps).length,
+          uniqueSeeds: new Set(CONTRACTS.map((contract) => contract.seed)).size,
+          uniqueWaveSets: new Set(CONTRACTS.map((contract) => JSON.stringify(contract.waves))).size
+        };
+      }
+
+      function distance(ax, ay, bx, by) {
+        return Math.hypot(ax - bx, ay - by);
+      }
+
+      function lerp(a, b, t) {
+        return a + (b - a) * t;
+      }
+
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function roundRect(x, y, w, h, r) {
+        const radius = Math.min(r, Math.abs(w) / 2, Math.abs(h) / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + w - radius, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+        ctx.lineTo(x + w, y + h - radius);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+        ctx.lineTo(x + radius, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+      }
+
+      canvas.addEventListener("pointerdown", handleCanvasClick);
+
+      function touchToNorm(touch) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+          x: (touch.clientX - rect.left) / rect.width * W,
+          y: (touch.clientY - rect.top) / rect.height * H
+        };
+      }
+      function clampCam() {
+        cam.zoom = Math.max(0.6, Math.min(2.5, cam.zoom));
+        if (cam.zoom <= 1) {
+          cam.x = W * (1 - cam.zoom) / 2;
+          cam.y = H * (1 - cam.zoom) / 2;
+        } else {
+          cam.x = Math.max(W * (1 - cam.zoom), Math.min(0, cam.x));
+          cam.y = Math.max(H * (1 - cam.zoom), Math.min(0, cam.y));
+        }
+      }
+      canvas.addEventListener("touchstart", (event) => {
+        if (event.touches.length === 2) {
+          event.preventDefault();
+          const pa = touchToNorm(event.touches[0]);
+          const pb = touchToNorm(event.touches[1]);
+          pinch.active = true;
+          pinch.dist = Math.hypot(pa.x - pb.x, pa.y - pb.y);
+          pinch.mx = (pa.x + pb.x) / 2;
+          pinch.my = (pa.y + pb.y) / 2;
+        }
+      }, { passive: false });
+      canvas.addEventListener("touchmove", (event) => {
+        if (!pinch.active || event.touches.length !== 2) return;
+        event.preventDefault();
+        const pa = touchToNorm(event.touches[0]);
+        const pb = touchToNorm(event.touches[1]);
+        const dist = Math.hypot(pa.x - pb.x, pa.y - pb.y);
+        const mx = (pa.x + pb.x) / 2;
+        const my = (pa.y + pb.y) / 2;
+        if (pinch.dist > 0) {
+          const newZoom = Math.max(0.6, Math.min(2.5, cam.zoom * (dist / pinch.dist)));
+          cam.x = mx - (mx - cam.x) * (newZoom / cam.zoom);
+          cam.y = my - (my - cam.y) * (newZoom / cam.zoom);
+          cam.zoom = newZoom;
+        }
+        cam.x += mx - pinch.mx;
+        cam.y += my - pinch.my;
+        clampCam();
+        pinch.dist = dist;
+        pinch.mx = mx;
+        pinch.my = my;
+      }, { passive: false });
+      function endPinch(event) {
+        if (event.touches.length < 2) pinch.active = false;
+      }
+      canvas.addEventListener("touchend", endPinch);
+      canvas.addEventListener("touchcancel", endPinch);
+
+      function startCardDrag(event, key) {
+        cardDrag.active = true;
+        cardDrag.key = key;
+        cardDrag.moved = false;
+        cardDrag.startX = event.clientX;
+        cardDrag.startY = event.clientY;
+      }
+      window.addEventListener("pointermove", (event) => {
+        if (!cardDrag.active) return;
+        const dx = event.clientX - cardDrag.startX;
+        const dy = event.clientY - cardDrag.startY;
+        if (!cardDrag.moved && Math.hypot(dx, dy) > 12) {
+          cardDrag.moved = true;
+          cardDrag.suppressClick = true;
+          const def = towers[cardDrag.key];
+          const ghost = document.createElement("div");
+          ghost.className = "nh-drag-ghost";
+          ghost.textContent = `${def.mark} ${def.name}`;
+          document.body.appendChild(ghost);
+          cardDrag.ghost = ghost;
+        }
+        if (cardDrag.moved && cardDrag.ghost) {
+          cardDrag.ghost.style.left = `${event.clientX}px`;
+          cardDrag.ghost.style.top = `${event.clientY}px`;
+        }
+      });
+      window.addEventListener("pointerup", (event) => {
+        if (!cardDrag.active) return;
+        if (cardDrag.moved && state) {
+          const point = pointerToWorld(event);
+          const slot = state.slots.find(
+            (item) => distance(point.x, point.y, item.x, item.y) <= 30,
+          );
+          if (slot && !slot.tower && !isSlotLocked(slot) && state.mode === "planning") {
+            state.selectedSlot = slot.id;
+            state.selectedObstacle = null;
+            buildTower(cardDrag.key);
+          }
+          if (cardDrag.ghost) {
+            cardDrag.ghost.remove();
+            cardDrag.ghost = null;
+          }
+        }
+        setTimeout(() => {
+          cardDrag.active = false;
+          cardDrag.moved = false;
+        }, 0);
+      });
+      ui.waveButton.addEventListener("click", () => {
+        if (state.mode === "defeat") {
+          newGame();
+        } else {
+          startWave();
+        }
+      });
+      ui.speedButton.addEventListener("click", () => {
+        state.speed = state.speed === 1 ? 2 : 1;
+        renderUi();
+      });
+      ui.pauseButton.addEventListener("click", () => {
+        state.paused = !state.paused;
+        renderUi();
+      });
+      ui.reset.addEventListener("click", () => {
+        ui.modal.classList.add("nh-veiled");
+        newGame();
+      });
+      ui.archive.addEventListener("click", showArchive);
+      ui.help.addEventListener("click", showHelp);
+      window.addEventListener("resize", resizeCanvas);
+
+      window.__radishGuardTest = {
+        contracts: CONTRACTS,
+        commanders,
+        towers,
+        enemies,
+        freshProfile,
+        encodeArchive,
+        decodeArchive,
+        validateContent,
+        beginTest,
+        simulateReference,
+        prepareReferenceDefense,
+        buildTowerAt,
+        upgradeTowerAt,
+        startWave,
+        step: update,
+        getState: () => clone(state)
+      };
+
+      newGame();
+      resizeCanvas();
+      animationId = requestAnimationFrame(loop);
+    </script>
+  </body>
+</html>

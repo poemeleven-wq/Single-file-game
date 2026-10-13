@@ -1,0 +1,294 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>行囊决斗场：投币赛季</title>
+<style>
+:root{color-scheme:light;--cream:#fff4e0;--cream2:#ffe9c4;--ink:#2b1a3a;--ink-soft:#5b4570;--muted:#8a7594;--orange:#f0640c;--orange-deep:#c24e05;--purple:#7c3aed;--gold:#ffb703;--green:#2f9e6e;--red:#e5484d;--blue:#3b82c4;--teal:#2f9e8a}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:repeating-linear-gradient(45deg,#fff4e0 0 18px,#ffefd2 18px 36px);color:var(--ink);font-family:"Arial Black","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+button{font:inherit;color:inherit}
+.pd-cabinet{width:min(1260px,100%);margin:auto;padding:14px}
+.pd-marquee{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border:3px solid var(--ink);border-radius:12px;background:linear-gradient(180deg,var(--orange) 0%,var(--orange-deep) 100%);box-shadow:6px 6px 0 var(--ink);color:#fff8ec}
+h1{font-size:clamp(22px,3.2vw,34px);margin:0;letter-spacing:.02em;text-shadow:3px 3px 0 var(--ink)}
+.pd-tagline{color:#ffe9c4;font-size:12px;margin-top:5px;font-weight:700}
+.pd-scoreboard{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.pd-score{min-width:80px;background:var(--cream);border:2.5px solid var(--ink);border-radius:8px;padding:7px 9px;box-shadow:3px 3px 0 var(--ink)}
+.pd-score small{display:block;color:var(--ink-soft);font-size:10px;font-weight:800;letter-spacing:.14em}
+.pd-score b{font-size:18px;color:var(--orange-deep)}
+.pd-floor{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:12px;margin-top:14px}
+.pd-screen{background:var(--cream);border:3px solid var(--ink);border-radius:12px;box-shadow:5px 5px 0 var(--ink)}
+.pd-bench{padding:11px}
+.pd-round-head{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:9px;font-weight:900}
+.pd-round-head b span{color:var(--orange-deep)}
+.pd-round-head small{color:var(--ink-soft);font-weight:800}
+.pd-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;background:var(--cream2);border:3px solid var(--ink);border-radius:10px;padding:6px;min-height:500px}
+.pd-cell{position:relative;min-width:0;min-height:78px;background:#fffaf0;border:2px dashed rgba(43,26,58,.35);border-radius:6px;cursor:pointer}
+.pd-cell:nth-child(2n){background:#fff1d8}
+.pd-gear{position:absolute;inset:3px;z-index:2;border:2.5px solid var(--ink);background:#fffdf6;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;overflow:hidden;box-shadow:2px 2px 0 rgba(43,26,58,.25)}
+.pd-gear.weapon{border-color:var(--red)}
+.pd-gear.armor{border-color:var(--blue)}
+.pd-gear.potion{border-color:var(--purple)}
+.pd-gear.food{border-color:#a16207}
+.pd-gear.gem{border-color:var(--teal)}
+.pd-gear.pd-selected{outline:3px solid var(--gold);z-index:4}
+.pd-gear.pd-trigger{animation:pd-pulse .3s}
+.pd-gear .icon{font-size:26px}
+.pd-gear b{font-size:9px;line-height:1.1;color:var(--ink)}
+.pd-gear em{position:absolute;right:3px;top:1px;color:var(--orange-deep);font-size:9px;font-style:normal;font-weight:900}
+@keyframes pd-pulse{50%{transform:scale(1.08);filter:brightness(1.15)}}
+.pd-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.pd-btn{border:2.5px solid var(--ink);background:var(--cream2);color:var(--ink);border-radius:8px;min-height:42px;padding:8px 11px;font-weight:900;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:transform .1s,box-shadow .1s}
+.pd-btn:hover{filter:brightness(1.05)}
+.pd-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.pd-btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.pd-btn.pd-primary{background:var(--gold);color:#3a2500;border-color:var(--ink)}
+.pd-hint{margin-top:8px;background:var(--cream2);border:2.5px solid var(--ink);border-left:8px solid var(--purple);padding:8px 10px;color:var(--ink);font-size:12px;line-height:1.5;min-height:39px;border-radius:0 8px 8px 0;font-weight:700}
+.pd-side{display:flex;flex-direction:column;gap:10px}
+.pd-section{padding:11px}
+.pd-section h2{font-size:14px;margin:0 0 8px;letter-spacing:.06em;border-bottom:2px solid var(--ink);padding-bottom:5px}
+.pd-shop{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.pd-offer{position:relative;min-width:0;min-height:102px;text-align:left;background:#fffdf6;border:2.5px solid var(--ink);border-radius:8px;padding:8px;cursor:pointer;box-shadow:2px 2px 0 rgba(43,26,58,.2)}
+.pd-offer:hover,.pd-offer.pd-on{border-color:var(--orange-deep);box-shadow:3px 3px 0 var(--orange)}
+.pd-offer .icon{font-size:25px}
+.pd-offer b{display:block;font-size:11px;color:var(--ink)}
+.pd-offer small{display:block;color:var(--ink-soft);font-size:9px;line-height:1.35}
+.pd-offer .price{position:absolute;right:5px;top:4px;color:var(--orange-deep);font-weight:900}
+.pd-build-row,.pd-trait{display:flex;justify-content:space-between;border-bottom:2px dotted rgba(43,26,58,.25);padding:6px 0;font-size:12px;font-weight:700}
+.pd-build-row:last-child,.pd-trait:last-child{border:0}
+.pd-build-row strong{color:var(--green)}
+.pd-arena{padding:11px;margin-top:10px}
+.pd-fighters{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
+.pd-fighter{background:var(--cream2);border:2.5px solid var(--ink);padding:10px;border-radius:10px;text-align:center;box-shadow:3px 3px 0 var(--ink)}
+.pd-avatar{font-size:34px}
+.pd-fighter b{display:block;color:var(--ink)}
+.pd-bars{display:grid;gap:5px;margin-top:8px}
+.pd-bar{height:10px;background:#fff;border:2px solid var(--ink);border-radius:5px;overflow:hidden}
+.pd-bar i{display:block;height:100%;background:var(--green);transition:width .2s}
+.pd-bar.pd-shield i{background:var(--blue)}
+.pd-bar.pd-stamina i{background:var(--gold)}
+.pd-vs{font-weight:900;color:var(--red);font-size:20px;-webkit-text-stroke:1.5px var(--ink)}
+.pd-feed{height:74px;overflow:auto;margin-top:8px;background:#fffaf0;border:2px solid var(--ink);padding:7px;font-size:11px;color:var(--ink);border-radius:8px;font-weight:700}
+.pd-feed div{border-left:4px solid var(--orange);padding-left:6px;margin-bottom:3px}
+.pd-enemy-items{display:flex;gap:4px;justify-content:center;margin-top:6px}
+.pd-enemy-items span{background:var(--cream2);border:2px solid var(--ink);padding:5px;border-radius:6px}
+.pd-overlay{position:fixed;inset:0;background:rgba(43,26,58,.82);z-index:20;display:flex;align-items:center;justify-content:center;padding:14px}
+.pd-overlay.pd-veiled{display:none}
+.pd-modal{width:min(820px,100%);max-height:92vh;overflow:auto;background:var(--cream);border:3px solid var(--ink);border-radius:14px;padding:17px;box-shadow:8px 8px 0 var(--ink)}
+.pd-modal h2{font-size:25px;margin:0 0 5px;color:var(--ink)}
+.pd-modal>p{color:var(--ink-soft);margin:0 0 13px;line-height:1.55;font-weight:700}
+.pd-choices{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.pd-choice{text-align:left;min-height:145px;background:#fffdf6;border:2.5px solid var(--ink);border-radius:10px;padding:12px;cursor:pointer;box-shadow:3px 3px 0 var(--ink)}
+.pd-choice:hover{border-color:var(--orange-deep);transform:translate(-1px,-2px);box-shadow:5px 6px 0 var(--ink)}
+.pd-choice .big{font-size:31px}
+.pd-choice h3{font-size:15px;margin:7px 0 4px;color:var(--ink)}
+.pd-choice p{color:var(--ink-soft);font-size:12px;line-height:1.5;margin:0}
+.pd-savebox{width:100%;height:130px;resize:vertical;background:#fffaf0;border:2.5px solid var(--ink);color:var(--ink);padding:9px;border-radius:8px;font-family:inherit}
+.pd-codex{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.pd-codex>div{background:#fffdf6;border:2px solid var(--ink);padding:7px;min-height:85px;border-radius:8px}
+.pd-codex b{display:block;font-size:11px;color:var(--ink)}
+.pd-codex small{font-size:9px;color:var(--ink-soft)}
+.pd-drag-ghost{position:fixed;z-index:999;transform:translate(-50%,-50%);pointer-events:none;padding:6px 12px;border-radius:8px;background:var(--gold);border:2.5px solid var(--ink);color:#3a2500;font-size:14px;font-weight:900;box-shadow:3px 3px 0 var(--ink);white-space:nowrap}
+.pd-cell.pd-drop-ok{outline:3px solid var(--green);background:#d8f5e6}
+.pd-cell.pd-drop-bad{outline:3px solid var(--red);background:#ffd9da}
+.pd-cell,.pd-gear,.pd-offer{touch-action:none;-webkit-user-select:none;user-select:none}
+@media(max-width:880px){.pd-floor{grid-template-columns:1fr}.pd-side{display:grid;grid-template-columns:1fr 1fr}.pd-side .pd-screen:last-child{grid-column:1/-1}.pd-grid{min-height:450px}.pd-cell{min-height:70px}}
+@media(max-width:580px){.pd-cabinet{padding:8px}.pd-marquee{flex-direction:column;align-items:flex-start}.pd-scoreboard{justify-content:flex-start}.pd-score{min-width:70px;padding:6px}.pd-floor{margin-top:8px}.pd-bench{padding:7px}.pd-grid{gap:2px;padding:4px;min-height:355px}.pd-cell{min-height:55px}.pd-gear .icon{font-size:20px}.pd-gear b{font-size:7px}.pd-side{display:flex}.pd-shop{grid-template-columns:repeat(2,1fr)}.pd-fighters{gap:5px}.pd-fighter{padding:7px}.pd-avatar{font-size:28px}.pd-choices{grid-template-columns:1fr}.pd-choice{min-height:110px}.pd-codex{grid-template-columns:repeat(2,1fr)}.pd-actions{display:grid;grid-template-columns:repeat(3,1fr)}.pd-actions .pd-btn{padding:7px 4px}.pd-round-head{font-size:12px}}
+</style></head><body>
+<main class="pd-cabinet"><header class="pd-marquee"><div><h1>行囊决斗场：投币赛季</h1><div class="pd-tagline">每一格行囊都是出战单位：排布形状、邻接、冷却、耐力与合成链。</div></div><div class="pd-scoreboard"><div class="pd-score"><small>代币</small><b id="pdCoins">12</b></div><div class="pd-score"><small>关卡</small><b id="pdRound">1 · 十胜 / 五败收官</b></div><div class="pd-score"><small>生命</small><b id="pdLives">5</b></div><div class="pd-score"><small>胜场</small><b id="pdWins">0</b></div></div></header>
+<section class="pd-floor"><div><section class="pd-screen pd-bench"><div class="pd-round-head"><b>行囊台 · <span id="pdClassName">待选择</span></b><small id="pdSpace">0 / 42 格</small></div><div class="pd-grid" id="pdGrid"></div><div class="pd-actions"><button class="pd-btn" id="pdRotateBtn">旋转</button><button class="pd-btn" id="pdForgeBtn">投币合成</button><button class="pd-btn" id="pdSellBtn">出售选中</button><button class="pd-btn" id="pdRerollBtn">刷新货架 1</button><button class="pd-btn" id="pdLockBtn">锁定货架</button><button class="pd-btn pd-primary" id="pdFightBtn">迎战</button><button class="pd-btn" id="pdPauseBtn">暂停</button></div><div class="pd-hint" id="pdHint">选择派别后开始打点行囊。</div></section>
+<section class="pd-screen pd-arena"><div class="pd-fighters"><div class="pd-fighter"><span class="pd-avatar" id="pdPlayerAvatar">🧳</span><b id="pdPlayerName">袋中斗士</b><div class="pd-bars"><span class="pd-bar"><i id="pdPlayerHp"></i></span><span class="pd-bar pd-shield"><i id="pdPlayerShield"></i></span><span class="pd-bar pd-stamina"><i id="pdPlayerStamina"></i></span></div></div><span class="pd-vs">VS</span><div class="pd-fighter"><span class="pd-avatar" id="pdEnemyAvatar">❔</span><b id="pdEnemyName">虚位以待</b><div class="pd-bars"><span class="pd-bar"><i id="pdEnemyHp"></i></span><span class="pd-bar pd-shield"><i id="pdEnemyShield"></i></span><span class="pd-bar pd-stamina"><i id="pdEnemyStamina"></i></span></div><div class="pd-enemy-items" id="pdEnemyItems"></div><small id="pdEnemyRules" style="display:block;color:var(--muted);font-size:11px;line-height:1.6;margin-top:5px;white-space:pre-line"></small></div></div><div class="pd-feed" id="pdFeed"></div></section></div>
+<aside class="pd-side"><section class="pd-screen pd-section"><h2>货架</h2><div class="pd-shop" id="pdShop"></div></section><section class="pd-screen pd-section"><h2>战力参数</h2><div id="pdBuildStats"></div></section><section class="pd-screen pd-section"><h2>邻接协同</h2><div id="pdTraits"></div><div class="pd-actions"><button class="pd-btn" id="pdCodexBtn">藏品图鉴</button><button class="pd-btn" id="pdSaveBtn">档案码</button><button class="pd-btn" id="pdNewBtn">新开一局</button></div></section></aside></section></main>
+<div class="pd-overlay" id="pdClassOverlay"><section class="pd-modal"><h2>选择行囊派别</h2><p>三个派别各有起始装备、资源规则与擅长的构筑方向。</p><div class="pd-choices" id="pdClassChoices"></div></section></div>
+<div class="pd-overlay pd-veiled" id="pdChoiceOverlay"><section class="pd-modal"><h2 id="pdChoiceTitle">选择行囊绝技</h2><p id="pdChoiceHelp">绝技在本赛季永久生效。</p><div class="pd-choices" id="pdChoices"></div></section></div>
+<div class="pd-overlay pd-veiled" id="pdInfoOverlay"><section class="pd-modal"><h2 id="pdInfoTitle">藏品图鉴</h2><div id="pdInfoBody"></div><div class="pd-actions"><button class="pd-btn pd-primary" id="pdCloseInfoBtn">返回台面</button></div></section></div>
+<script>
+(()=>{"use strict";const $=id=>document.getElementById(id),SAVE='backpackArenaV3',COLS=7,ROWS=6;
+const ITEMS={
+ dagger:{n:'短刀',i:'🗡️',r:'common',type:'weapon',cost:2,shape:[[0,0],[1,0]],d:'1.7秒造成 7 伤害',dmg:7,cd:1.7,stam:2,t:['锋刃']},buckler:{n:'臂盾',i:'🛡️',r:'common',type:'armor',cost:2,shape:[[0,0],[0,1]],d:'战斗开始获得 14 护盾',armor:14,t:['坚壁']},herb:{n:'回春草',i:'🌿',r:'common',type:'potion',cost:2,shape:[[0,0]],d:'生命低于50%时恢复 10',heal:10,trigger:.5,t:['炼金']},bread:{n:'香麦包',i:'🥖',r:'common',type:'food',cost:2,shape:[[0,0],[1,0]],d:'最大生命 +8，耐力恢复 +8%',hp:8,regen:.08,t:['后勤']},stone:{n:'砥石',i:'🪨',r:'common',type:'gem',cost:2,shape:[[0,0]],d:'相邻武器伤害 +2',adj:'weapon',bonus:2,t:['匠艺']},
+ sword:{n:'青锋',i:'⚔️',r:'uncommon',type:'weapon',cost:4,shape:[[0,0],[1,0],[2,0]],d:'2.5秒造成 14 伤害',dmg:14,cd:2.5,stam:3,t:['锋刃']},bow:{n:'逐猎弓',i:'🏹',r:'uncommon',type:'weapon',cost:4,shape:[[0,0],[0,1],[0,2]],d:'1.9秒造成 10 伤害，受宝石强化',dmg:10,cd:1.9,stam:2.5,t:['遥击']},mail:{n:'链甲',i:'🥋',r:'uncommon',type:'armor',cost:4,shape:[[0,0],[1,0],[0,1],[1,1]],d:'生命 +18，开始获得 10 护盾',hp:18,armor:10,t:['坚壁']},potion:{n:'赤药',i:'🧪',r:'uncommon',type:'potion',cost:4,shape:[[0,0],[0,1]],d:'生命低于45%时恢复 22',heal:22,trigger:.45,t:['炼金']},cheese:{n:'陈酪',i:'🧀',r:'uncommon',type:'food',cost:4,shape:[[0,0]],d:'每5秒恢复 3 生命',tickHeal:3,t:['后勤']},ruby:{n:'赤玉',i:'🔴',r:'uncommon',type:'gem',cost:4,shape:[[0,0]],d:'相邻武器伤害 +4',adj:'weapon',bonus:4,t:['匠艺']},thorn:{n:'棘环',i:'🌵',r:'uncommon',type:'armor',cost:4,shape:[[0,0],[1,0],[1,1]],d:'开始获得 8 护盾；受击反伤 2',armor:8,reflect:2,t:['自然','坚壁']},
+ greatsword:{n:'巨锋剑',i:'🗡️',r:'rare',type:'weapon',cost:7,shape:[[0,0],[1,0],[2,0],[2,1]],d:'3.8秒造成 28 伤害',dmg:28,cd:3.8,stam:5,t:['锋刃','匠艺']},crossbow:{n:'星芒弩',i:'🏹',r:'rare',type:'weapon',cost:7,shape:[[0,0],[0,1],[1,1]],d:'2.2秒造成 18 伤害，暴击率20%',dmg:18,cd:2.2,stam:3,crit:.2,t:['遥击','匠艺']},tower:{n:'重盾',i:'🛡️',r:'rare',type:'armor',cost:7,shape:[[0,0],[0,1],[0,2],[1,2]],d:'开始获得 35 护盾',armor:35,t:['坚壁']},elixir:{n:'月华醴',i:'⚗️',r:'rare',type:'potion',cost:7,shape:[[0,0],[1,0]],d:'生命低于50%时恢复28；饮用后武器加速15%',heal:28,trigger:.5,haste:.15,t:['炼金']},pepper:{n:'斗椒',i:'🌶️',r:'rare',type:'food',cost:6,shape:[[0,0]],d:'武器伤害 +10%，最大耐力 +2',damagePct:.1,stamina:2,t:['后勤']},sapphire:{n:'苍玉',i:'🔵',r:'rare',type:'gem',cost:6,shape:[[0,0]],d:'相邻武器、陈酪和蛇吻瓶触发间隔 -12%',adj:'all',speed:.12,t:['匠艺']},poison:{n:'蛇吻瓶',i:'🐍',r:'rare',type:'potion',cost:7,shape:[[0,0],[0,1]],d:'战斗开始使敌人中毒，每2秒3伤害',poison:3,t:['炼金']},
+ sunblade:{n:'日冕剑',i:'🌞',r:'epic',type:'weapon',cost:11,shape:[[0,0],[1,0],[2,0],[1,1]],d:'2.8秒造成 24；每次攻击恢复3生命',dmg:24,cd:2.8,stam:4,lifesteal:3,t:['锋刃','辉光']},moonbow:{n:'月蚀弓',i:'🌙',r:'epic',type:'weapon',cost:11,shape:[[0,0],[0,1],[0,2],[1,1]],d:'1.6秒造成14；每四击造成双倍',dmg:14,cd:1.6,stam:2.5,burst:4,t:['遥击','辉光']},dragon:{n:'龙鳞铠',i:'🐉',r:'epic',type:'armor',cost:11,shape:[[0,0],[1,0],[0,1],[1,1],[0,2]],d:'生命 +30，护盾 24，减伤8%',hp:30,armor:24,resist:.08,t:['坚壁','自然']},prism:{n:'万象晶',i:'💠',r:'epic',type:'gem',cost:10,shape:[[0,0],[1,0]],d:'相邻非宝石物品的有益数值 +18%',adj:'all',amp:.18,t:['匠艺','辉光']}
+};
+const RECIPES=[['dagger','dagger','sword'],['sword','stone','greatsword'],['bow','ruby','crossbow'],['buckler','buckler','tower'],['herb','potion','elixir'],['greatsword','ruby','sunblade'],['crossbow','sapphire','moonbow'],['mail','thorn','dragon']];
+const CLASSES={berserker:{n:'狂刃斗士',i:'🪓',d:'生命越低，武器伤害越高；起始短刀与斗椒。',start:['dagger','pepper']},alchemist:{n:'炼丹师',i:'🧙‍♀️',d:'每瓶治疗药剂可在低血时独立触发两次；起始赤药与蛇吻瓶。',start:['potion','poison']},ranger:{n:'逐林客',i:'🧝',d:'遥击武器冷却 -12%；起始逐逐猎弓与赤玉。',start:['bow','ruby']}};
+const PERKS={expand:{n:'扩容夹层',i:'🧳',d:'最大生命 +15，所有物品效果 +5%。'},economy:{n:'旧货贩子',i:'🪙',d:'每次胜利额外获得 2 代币。'},tempo:{n:'快手打点',i:'⚡',d:'所有武器冷却 -10%。'},brew:{n:'随身炉',i:'⚗️',d:'药剂治疗 +30%。'},guard:{n:'叠甲护具',i:'🛡️',d:'每件护甲额外提供 4 护盾。'},craft:{n:'大师砥石',i:'🔨',d:'宝石邻接加成 +30%。'},last:{n:'绝境反击',i:'🔥',d:'生命低于35%时伤害 +25%。'},stamina:{n:'轻扣带',i:'🪶',d:'最大耐力 +4，恢复速度 +12%。'}};
+const ENEMIES=[{n:'锅铲佣兵',i:'🧑‍🍳',style:'坚壁',gear:['sword','mail','buckler']},{n:'夜林猎手',i:'🦊',style:'遥击',gear:['bow','ruby','cheese']},{n:'毒沼术士',i:'🧙',style:'炼金',gear:['dagger','poison','potion','herb']},{n:'赤角疯子',i:'👹',style:'锋刃',gear:['dagger','sword','pepper']},{n:'王城卫',i:'🦁',style:'反击',gear:['sword','tower','thorn']},{n:'月弓魁首',i:'🌙',style:'爆发',gear:['crossbow','sapphire','elixir']}];
+let q=null,profile={wins:0,best:0,glory:0,seen:[]},selectedOffer=null,selectedItem=null,rotation=0,battleTimer=null,runtime=null;
+const uid=()=>Math.random().toString(36).slice(2),shape=(id,rot=0)=>{const raw=ITEMS[id].shape.map(([x,y])=>{for(let i=0;i<((rot%4+4)%4);i++)[x,y]=[y,-x];return[x,y]}),minX=Math.min(...raw.map(x=>x[0])),minY=Math.min(...raw.map(x=>x[1]));return raw.map(([x,y])=>[x-minX,y-minY])};
+async function copyArchive(){const box=$('pdSaveCode');try{if(!navigator.clipboard?.writeText)throw Error('剪贴板不可用');await navigator.clipboard.writeText(box.value);alert('档案已复制')}catch{box.focus();box.select();alert('自动复制不可用，档案已选中；请按 Ctrl+C 或长按复制')}}
+function fighting(){return Boolean(runtime&&!runtime.finished)}
+function editable(){return Boolean(q&&!fighting()&&!q.gameOver&&!q.champion)}
+function fresh(cls){return{v:3,cls,gold:12,round:1,lives:5,wins:0,losses:0,items:[],shop:[],locked:false,perks:[],log:[],gameOver:false,champion:false}}
+function syncControls(){for(const id of ['pdRotateBtn','pdForgeBtn','pdSellBtn','pdRerollBtn','pdLockBtn'])$(id).disabled=!editable();$('pdFightBtn').disabled=!q||q.gameOver||q.champion||(fighting()&&Boolean(battleTimer));$('pdFightBtn').textContent=fighting()&&!battleTimer?'继续战斗':'迎战';$('pdPauseBtn').disabled=!(fighting()&&Boolean(battleTimer))}
+function save(){try{localStorage.setItem(SAVE,JSON.stringify({q,profile}))}catch{}syncControls()}
+function validateSave(data){
+ const s=data.q,p=data.profile;if(!p||!Array.isArray(p.seen)||p.seen.some(id=>!Object.hasOwn(ITEMS,id)))throw Error('档案数据无效');
+ for(const key of ['wins','best','glory'])if(!Number.isFinite(p[key])||p[key]<0||p[key]>1e8)throw Error('战绩数据无效');
+ if(s){if(s.v!==3||!Object.hasOwn(CLASSES,s.cls)||!Array.isArray(s.items)||!Array.isArray(s.shop)||s.shop.length>4||s.shop.some(id=>id!==null&&!Object.hasOwn(ITEMS,id))||!Array.isArray(s.perks)||s.perks.some(id=>!Object.hasOwn(PERKS,id))||!Array.isArray(s.log)||s.log.some(x=>typeof x!=='string'))throw Error('赛季档案无效');
+  for(const key of ['gold','round','lives','wins','losses'])if(!Number.isInteger(s[key])||s[key]<0||s[key]>1e6)throw Error('关卡数值无效');
+  if(s.round<1||s.round>15||s.lives>5||s.wins>10||s.losses>5)throw Error('进度数据无效');
+  const occupied=new Set(),ids=new Set();for(const it of s.items){if(!it||!Object.hasOwn(ITEMS,it.id)||typeof it.uid!=='string'||ids.has(it.uid)||!Number.isInteger(it.rot)||it.rot<0||it.rot>3||!Number.isInteger(it.level)||it.level<1||it.level>20||!Array.isArray(it.cells)||it.cells.length!==ITEMS[it.id].shape.length)throw Error('装备数据无效');ids.add(it.uid);for(const cell of it.cells){if(!Number.isInteger(cell)||cell<0||cell>=COLS*ROWS||occupied.has(cell))throw Error('装备重叠或越界');occupied.add(cell)}
+   const origin=Math.min(...it.cells),raw=shape(it.id,it.rot),expected=cellsFor(it.id,origin,it.rot);if(raw.some(([x,y])=>origin%COLS+x>=COLS||Math.floor(origin/COLS)+y>=ROWS)||expected.some(cell=>!it.cells.includes(cell)))throw Error('装备形状无效');
+  }
+  s.champion=s.wins>=10&&s.lives>0;s.gameOver=s.lives<=0;
+ }
+ return{q:s||null,profile:{wins:p.wins,best:p.best,glory:p.glory,seen:[...new Set(p.seen)]}};
+}
+function load(){try{const data=validateSave(JSON.parse(localStorage.getItem(SAVE)));q=data.q;profile=data.profile}catch{}}
+function checksum(s){let h=0;for(let i=0;i<s.length;i++)h=(Math.imul(h,31)+s.charCodeAt(i))>>>0;return h.toString(36)}function exportCode(){const b=btoa(unescape(encodeURIComponent(JSON.stringify({v:3,q,profile}))));return`BA3-${b}-${checksum(b)}`}function importCode(x){if(fighting())throw Error('战斗中不能替换赛季');const m=String(x).trim().match(/^BA3-(.+)-([a-z0-9]+)$/i);if(!m||m[1].length>200000||checksum(m[1])!==m[2])throw Error('档案码校验失败');const d=JSON.parse(decodeURIComponent(escape(atob(m[1]))));if(d.v!==3)throw Error('版本不兼容');const clean=validateSave(d);q=clean.q;profile=clean.profile;runtime=null;save();if(q)draw();else $('pdClassOverlay').classList.remove('pd-veiled')}
+function cellsFor(id,start,rot=0){const r=Math.floor(start/COLS),c=start%COLS;return shape(id,rot).map(([x,y])=>(r+y)*COLS+c+x)}
+function fits(id,start,rot=0,ignore=null,items=q.items){
+ const raw=shape(id,rot),r=Math.floor(start/COLS),c=start%COLS;
+ if(raw.some(([x,y])=>r+y<0||r+y>=ROWS||c+x<0||c+x>=COLS))return false;
+ const cells=cellsFor(id,start,rot),ignored=Array.isArray(ignore)?ignore:[ignore];
+ return !items.some(it=>!ignored.includes(it.uid)&&it.cells.some(x=>cells.includes(x)));
+}
+function place(start){if(!editable())return;if(selectedOffer!=null){const id=q.shop[selectedOffer];if(!id||!fits(id,start,rotation))return hint('这里放不下，旋转或腾出空间后再试');const d=ITEMS[id];if(q.gold<d.cost)return hint('代币不足');q.gold-=d.cost;q.items.push({uid:uid(),id,rot:rotation,cells:cellsFor(id,start,rotation),level:1});q.shop[selectedOffer]=null;discover(id);selectedOffer=null;rotation=0;hint(`购入 ${d.n}`);draw();return}if(selectedItem){const it=q.items.find(x=>x.uid===selectedItem);if(it&&fits(it.id,start,it.rot,it.uid)){it.cells=cellsFor(it.id,start,it.rot);selectedItem=null;hint(`移动 ${ITEMS[it.id].n}`);draw()}}}
+function discover(id){profile.seen.push(id);profile.seen=[...new Set(profile.seen)]}function hint(s){$('pdHint').textContent=s;if(q){q.log.unshift(s);q.log=q.log.slice(0,12)}save()}
+function rarityRoll(){const x=Math.random(),max=q.round;return x<Math.min(.08,max*.005)?'epic':x<Math.min(.3,.12+max*.012)?'rare':x<.65?'uncommon':'common'}function makeOffer(){const r=rarityRoll(),pool=Object.keys(ITEMS).filter(id=>ITEMS[id].r===r);return pool[Math.floor(Math.random()*pool.length)]}function roll(free=false){if(!editable())return;if(!free){if(q.gold<1)return hint('代币不足');q.gold--}q.shop=Array.from({length:4},makeOffer);selectedOffer=null;draw()}
+function adjacency(items=q.items){const map={};items.forEach(a=>{map[a.uid]=[];items.forEach(b=>{if(a===b)return;const near=a.cells.some(x=>{const r=Math.floor(x/COLS),c=x%COLS;return b.cells.some(y=>{const rr=Math.floor(y/COLS),cc=y%COLS;return Math.abs(r-rr)+Math.abs(c-cc)===1})});if(near)map[a.uid].push(b)})});return map}
+function buildStats(build=q){
+ const adj=adjacency(build.items),expanded=build.perks.includes('expand'),craft=build.perks.includes('craft')?1.3:1;
+ const strength=it=>(1+(it.level-1)*.35)*(expanded?1.05:1);
+ const s={hp:55+(expanded?15:0),shield:0,stamina:10,regen:3,weapons:[],reflect:0,resist:0,poison:0,tickHeal:0,periodics:[],heals:[],damagePct:0,speed:0};
+ build.items.forEach(it=>{
+  const d=ITEMS[it.id],near=adj[it.uid];
+  // Gems use their intrinsic strength: support never recursively feeds itself.
+  const amplify=d.type==='gem'?1:1+near.reduce((sum,n)=>sum+(ITEMS[n.id].amp||0)*strength(n)*craft,0);
+  const mult=strength(it)*amplify;
+  let cooldown=1,bonus=0;
+  if(d.type!=='gem')near.forEach(n=>{const gem=ITEMS[n.id],gain=strength(n)*craft;
+   if(gem.adj==='all')cooldown*=Math.max(.1,1-(gem.speed||0)*gain);
+   if(d.type==='weapon'&&(gem.adj==='weapon'||gem.adj==='all'))bonus+=(gem.bonus||0)*gain;
+  });
+  const period=seconds=>Math.max(.25,seconds*cooldown);
+  s.hp+=(d.hp||0)*mult;s.shield+=(d.armor||0)*mult;s.stamina+=(d.stamina||0)*mult;s.regen+=(d.regen||0)*3*mult;
+  s.reflect+=(d.reflect||0)*mult;s.resist=Math.max(s.resist,(d.resist||0)*mult);s.damagePct+=(d.damagePct||0)*mult;
+  if(d.poison){const value=d.poison*mult;s.poison+=value;s.periodics.push({uid:it.uid,kind:'poison',value,cd:period(2),t:0})}
+  if(d.tickHeal){const value=d.tickHeal*mult;s.tickHeal+=value;s.periodics.push({uid:it.uid,kind:'heal',value,cd:period(5),t:0})}
+  if(d.heal)s.heals.push({uid:it.uid,value:d.heal*mult,used:0,maxUses:build.cls==='alchemist'?2:1,threshold:d.trigger||.5,haste:(d.haste||0)*mult});
+  else s.speed+=(d.haste||0)*mult;
+  if(d.type==='weapon')s.weapons.push({uid:it.uid,id:it.id,damage:d.dmg*mult+bonus*amplify,cd:period(d.cd),stam:d.stam,crit:Math.min(.75,(d.crit||0)*mult),lifesteal:(d.lifesteal||0)*mult,burst:d.burst||0,count:0,t:0});
+ });
+ if(build.cls==='ranger')s.weapons.filter(w=>ITEMS[w.id].t.includes('遥击')).forEach(w=>w.cd=Math.max(.25,w.cd*.88));
+ if(build.perks.includes('tempo'))s.weapons.forEach(w=>w.cd=Math.max(.25,w.cd*.9));
+ if(build.perks.includes('guard'))s.shield+=build.items.filter(x=>ITEMS[x.id].type==='armor').length*4;
+ if(build.perks.includes('brew'))s.heals.forEach(x=>x.value*=1.3);
+ if(build.perks.includes('stamina')){s.stamina+=4;s.regen*=1.12}
+ s.resist=Math.min(.75,s.resist);s.speed=Math.min(2,s.speed);return s;
+}
+function enemyStats(){
+ const template=ENEMIES[(q.round-1)%ENEMIES.length],gear=template.gear.slice(0,2+Math.floor(q.round/5)),equipment=[];
+ // These are ordinary level-one items with legal cells, not cosmetic icons.
+ for(const [index,id] of gear.entries()){
+  let start=0;while(start<COLS*ROWS&&!fits(id,start,0,null,equipment))start++;
+  if(start===COLS*ROWS)throw Error('对手装备无法入袋');
+  equipment.push({uid:`enemy-${index}`,id,rot:0,level:1,cells:cellsFor(id,start,0)});
+ }
+ const shared=buildStats({cls:'opponent',items:equipment,perks:[]}),scale=1+(q.round-1)*.105;
+ if(!shared.weapons.length)throw Error('对手缺少真实武器');
+ const baseHp=Math.round((48+q.round*5)*scale),baseShield=Math.round((q.round%3)*7+q.round*1.4);
+ return{...template,...shared,gear,equipment,scale,baseHp,baseShield,hp:baseHp+shared.hp-55,shield:baseShield+shared.shield,
+  weapons:shared.weapons.map(w=>({...w,damage:w.damage*scale}))};
+}
+function forge(){
+ if(!editable())return;
+ for(const[a,b,out]of RECIPES){
+  const x=q.items.find(it=>it.id===a),y=q.items.find(it=>it!==x&&it.id===b);
+  if(!x||!y)continue;
+  const start=Math.min(...x.cells);
+  // Both materials free their old cells, but nothing changes until the output fits.
+  if(!fits(out,start,x.rot,[x.uid,y.uid]))continue;
+  x.id=out;x.level=1;x.cells=cellsFor(out,start,x.rot);
+  q.items=q.items.filter(it=>it!==y);
+  discover(out);selectedItem=null;hint(`投币成功：${ITEMS[out].n}`);draw();return;
+ }
+ const pair=q.items.find(x=>x.level<20&&q.items.some(y=>y!==x&&y.id===x.id&&y.level===x.level));
+ if(pair){
+  const y=q.items.find(z=>z!==pair&&z.id===pair.id&&z.level===pair.level);
+  pair.level++;q.items=q.items.filter(z=>z!==y);
+  hint(`${ITEMS[pair.id].n} 强化到 +${pair.level}`);draw();return;
+ }
+ hint('没有可用或放得下的配方：请为合成结果腾出空间，或使用两件未满级同名装备');
+}
+function startBattle(){if(fighting()){if(!battleTimer){battleTimer=setInterval(stepBattle,250);syncControls()}return}if(!editable())return;if(!q.items.some(x=>ITEMS[x.id].type==='weapon'))return hint('至少携带一件武器');selectedItem=null;selectedOffer=null;const p=buildStats(),e=enemyStats();runtime={time:0,finished:false,p:{...p,max:p.hp,cur:p.hp,shieldCur:p.shield,stamCur:p.stamina},e:{...e,max:e.hp,cur:e.hp,shieldCur:e.shield,stamCur:e.stamina},feed:[]};battleTimer=setInterval(stepBattle,250);draw();drawBattle();syncControls()}
+function pauseBattle(){if(!fighting()||!battleTimer)return;clearInterval(battleTimer);battleTimer=null;syncControls();$('pdHint').textContent='战斗已暂停，点击继续战斗；暂停期间不能改变构筑。'}
+function damage(from,to,amount,label,weapon=false){
+ if(from.cur<=0||to.cur<=0)return;
+ let dmg=amount*(1-(to.resist||0));
+ if(weapon&&from===runtime.p&&q.cls==='berserker')dmg*=1+(1-from.cur/from.max)*.5;
+ if(from===runtime.p&&q.perks.includes('last')&&from.cur/from.max<.35)dmg*=1.25;
+ if(weapon)dmg*=1+from.damagePct;
+ dmg=Math.round(dmg);const blocked=Math.min(to.shieldCur,dmg);to.shieldCur-=blocked;to.cur-=dmg-blocked;
+ if(weapon&&to.reflect&&dmg-blocked>0)from.cur-=Math.round(to.reflect*(1-(from.resist||0)));
+ runtime.feed.unshift(`${label}造成 ${dmg} 伤害${blocked?`（格挡${blocked}）`:''}`);runtime.feed=runtime.feed.slice(0,12);
+}
+function act(side,other){
+ if(side.cur<=0||other.cur<=0)return;side.stamCur=Math.min(side.stamina,side.stamCur+side.regen*.25);
+ for(const w of side.weapons){
+  if(side.cur<=0||other.cur<=0)break;
+  w.t+=.25*(1+Math.min(2,side.speed));let attacks=0;
+  while(w.t+1e-9>=w.cd&&side.stamCur>=w.stam&&side.cur>0&&other.cur>0&&attacks<4){
+   w.t=Math.max(0,w.t-w.cd);side.stamCur-=w.stam;w.count++;attacks++;
+   let dmg=w.damage*(Math.random()<w.crit?1.75:1);if(w.burst&&w.count%w.burst===0)dmg*=2;
+   damage(side,other,dmg,ITEMS[w.id].n,true);
+   if(w.lifesteal&&side.cur>0)side.cur=Math.min(side.max,side.cur+w.lifesteal);flash(w.uid);
+  }
+  // Exhaustion keeps one ready attack, not an unlimited catch-up burst.
+  if(side.stamCur<w.stam)w.t=Math.min(w.t,w.cd);
+ }
+ if(side.cur<=0||other.cur<=0)return;
+ for(const pot of side.heals){
+  if(pot.used<(pot.maxUses||1)&&side.cur/side.max<(pot.threshold||.5)){
+   pot.used++;side.cur=Math.min(side.max,side.cur+pot.value);side.speed=Math.min(2,side.speed+(pot.haste||0));
+   runtime.feed.unshift(`药剂恢复 ${Math.round(pot.value)} 生命${pot.maxUses===2?`（剩余${pot.maxUses-pot.used}次）`:''}`);
+  }
+ }
+}
+function tickPeriodics(side,other){
+ if(!Array.isArray(side.periodics))return;
+ for(const item of side.periodics){
+  if(side.cur<=0)break;item.t+=.25;
+  while(item.t+1e-9>=item.cd&&side.cur>0){
+   item.t=Math.max(0,item.t-item.cd);
+   if(item.kind==='heal')side.cur=Math.min(side.max,side.cur+item.value);
+   else if(other.cur>0)damage(side,other,item.value,'毒素');
+  }
+ }
+}
+function stepBattle(){
+ if(!fighting())return;runtime.time+=.25;act(runtime.p,runtime.e);if(runtime.e.cur>0&&runtime.p.cur>0)act(runtime.e,runtime.p);
+ tickPeriodics(runtime.p,runtime.e);tickPeriodics(runtime.e,runtime.p);
+ // Enemy templates and older rule fixtures have only aggregate periodic values.
+ if(Math.floor(runtime.time*4)%8===0){
+  if(!Array.isArray(runtime.p.periodics)&&runtime.p.poison&&runtime.p.cur>0)damage(runtime.p,runtime.e,runtime.p.poison,'毒素');
+  if(!Array.isArray(runtime.e.periodics)&&runtime.e.poison&&runtime.e.cur>0)damage(runtime.e,runtime.p,runtime.e.poison,'毒素');
+ }
+ if(Math.floor(runtime.time*4)%20===0){
+  if(!Array.isArray(runtime.p.periodics)&&runtime.p.cur>0)runtime.p.cur=Math.min(runtime.p.max,runtime.p.cur+runtime.p.tickHeal);
+  if(!Array.isArray(runtime.e.periodics)&&runtime.e.cur>0)runtime.e.cur=Math.min(runtime.e.max,runtime.e.cur+runtime.e.tickHeal);
+ }
+ drawBattle();if(runtime.p.cur<=0||runtime.e.cur<=0||runtime.time>=35)finishBattle(runtime.p.cur>0&&(runtime.e.cur<=0||(runtime.time>=35&&runtime.p.cur/runtime.p.max>runtime.e.cur/runtime.e.max)));
+}
+function flash(uid){const el=document.querySelector(`[data-pd-uid="${uid}"]`);if(el){el.classList.add('pd-trigger');setTimeout(()=>el.classList.remove('pd-trigger'),300)}}
+function finishBattle(win){if(!fighting())return;clearInterval(battleTimer);battleTimer=null;runtime.finished=true;if(win){q.wins++;q.gold+=6+(q.perks.includes('economy')?2:0)+Math.floor(q.round/4);hint(`胜利！获得 ${6+(q.perks.includes('economy')?2:0)+Math.floor(q.round/4)} 代币`)}else{q.losses++;q.lives--;q.gold+=3;hint('败北，获得 3 代币整备')}profile.best=Math.max(profile.best,q.round);q.round++;if(q.lives<=0){q.gameOver=true;profile.glory+=q.wins*4;showResult(false)}else if(q.wins>=10){q.champion=true;profile.wins++;profile.glory+=60;showResult(true)}else{if(!q.locked)roll(true);if(q.round===5||q.round===9)showPerk()}draw();save()}
+function showPerk(){const ids=Object.keys(PERKS).filter(x=>!q.perks.includes(x)).sort(()=>Math.random()-.5).slice(0,3);$('pdChoiceTitle').textContent='选择行囊绝技';$('pdChoiceHelp').textContent='绝技将永久改变本赛季的装备效率。';$('pdChoices').innerHTML=ids.map(id=>`<button class="pd-choice" data-pd-perk="${id}"><span class="pd-big">${PERKS[id].i}</span><h3>${PERKS[id].n}</h3><p>${PERKS[id].d}</p></button>`).join('');$('pdChoiceOverlay').classList.remove('pd-veiled');document.querySelectorAll('[data-pd-perk]').forEach(b=>b.onclick=()=>{q.perks.push(b.dataset.pdPerk);$('pdChoiceOverlay').classList.add('pd-veiled');hint(`习得绝技：${PERKS[b.dataset.pdPerk].n}`);draw()})}
+function renderGear(it,origin){const d=ITEMS[it.id],el=document.createElement('div');el.className=`pd-gear ${d.type} ${selectedItem===it.uid?'pd-selected':''}`;el.dataset.pdUid=it.uid;el.innerHTML=`<em>${it.level>1?'+'+it.level:''}</em><span class="pd-icon">${d.i}</span><b>${d.n}</b>`;el.onclick=e=>{e.stopPropagation();if(!editable())return;selectedOffer=null;selectedItem=selectedItem===it.uid?null:it.uid;rotation=it.rot;draw()};return el}
+function draw(){if(!q)return;$('pdCoins').textContent=q.gold;$('pdRound').textContent=`${q.round} · 十胜 / 五败收官`;$('pdLives').textContent='♥'.repeat(Math.max(0,q.lives));$('pdWins').textContent=q.wins;$('pdClassName').textContent=CLASSES[q.cls].n;$('pdPlayerAvatar').textContent=CLASSES[q.cls].i;$('pdSpace').textContent=`${new Set(q.items.flatMap(x=>x.cells)).size} / ${ROWS*COLS} 格`;const grid=$('pdGrid');grid.innerHTML='';for(let i=0;i<ROWS*COLS;i++){const c=document.createElement('div');c.className='cell';c.onclick=()=>place(i);grid.append(c)}q.items.forEach(it=>{const first=Math.min(...it.cells);grid.children[first]?.append(renderGear(it,first));it.cells.filter(x=>x!==first).forEach(x=>{if(grid.children[x])grid.children[x].style.background='#342844'})});$('pdShop').innerHTML=q.shop.map((id,i)=>id?`<button class="pd-offer ${selectedOffer===i?'pd-on':''}" data-pd-offer="${i}"><span class="pd-price">${ITEMS[id].cost}</span><span class="pd-icon">${ITEMS[id].i}</span><b>${ITEMS[id].n}</b><small>${ITEMS[id].d}<br>${ITEMS[id].shape.length} 格 · ${ITEMS[id].t.join('/')}</small></button>`:'<button class="pd-offer" disabled>已售出</button>').join('');document.querySelectorAll('[data-pd-offer]').forEach(b=>b.onclick=()=>{if(!editable())return;selectedOffer=+b.dataset.pdOffer;selectedItem=null;rotation=0;hint(`选择 ${ITEMS[q.shop[selectedOffer]].n}，点击行囊空格放置`);draw()});const s=buildStats();$('pdBuildStats').innerHTML=[['最大生命',Math.round(s.hp)],['起始护盾',Math.round(s.shield)],['武器数量',s.weapons.length],['武器理论伤害/秒',s.weapons.reduce((a,w)=>a+w.damage*(1+s.damagePct)*(1+s.speed)/w.cd,0).toFixed(1)],['耐力 / 恢复',`${s.stamina.toFixed(1)} / ${s.regen.toFixed(1)}`]].map(x=>`<div class="pd-build-row"><span>${x[0]}</span><strong>${x[1]}</strong></div>`).join('');const tags={};q.items.forEach(it=>ITEMS[it.id].t.forEach(t=>tags[t]=(tags[t]||0)+1));$('pdTraits').innerHTML=Object.entries(tags).sort((a,b)=>b[1]-a[1]).map(([t,n])=>`<div class="pd-trait"><span>${t}</span><strong>${n} 件</strong></div>`).join('')||'<small style="color:var(--muted)">购入装备后显示协同。</small>';$('pdLockBtn').classList.toggle('primary',q.locked);$('pdFightBtn').disabled=q.gameOver||q.champion||fighting();$('pdEnemyName').textContent=ENEMIES[(q.round-1)%ENEMIES.length].n;$('pdEnemyAvatar').textContent=ENEMIES[(q.round-1)%ENEMIES.length].i;const opponent=enemyStats();$('pdEnemyItems').innerHTML=opponent.gear.map(id=>`<span title="${ITEMS[id].n}：${ITEMS[id].d}">${ITEMS[id].i}</span>`).join('');$('pdEnemyRules').textContent=`装备：${opponent.gear.map(id=>ITEMS[id].n).join('、')}\n基础体质 ${opponent.baseHp} · 基础盾 ${opponent.baseShield} · 武器伤害 ×${opponent.scale.toFixed(2)}\n装备使用相同规则；无玩家职业和行囊绝技。`;if(!battleTimer){['pdPlayerHp','pdPlayerShield','pdPlayerStamina','pdEnemyHp','pdEnemyShield','pdEnemyStamina'].forEach(id=>$(id).style.width='100%');$('pdFeed').innerHTML=q.log.slice(0,8).map(x=>`<div>${x}</div>`).join('')}save()}
+function drawBattle(){const p=runtime.p,e=runtime.e;$('pdPlayerHp').style.width=Math.max(0,p.cur/p.max*100)+'%';$('pdPlayerShield').style.width=Math.min(100,p.shieldCur/Math.max(1,p.shield)*100)+'%';$('pdPlayerStamina').style.width=p.stamCur/p.stamina*100+'%';$('pdEnemyHp').style.width=Math.max(0,e.cur/e.max*100)+'%';$('pdEnemyShield').style.width=Math.min(100,e.shieldCur/Math.max(1,e.shield)*100)+'%';$('pdEnemyStamina').style.width=e.stamCur/e.stamina*100+'%';$('pdFeed').innerHTML=runtime.feed.map(x=>`<div>${x}</div>`).join('')}
+function startClass(id){if(fighting())return;runtime=null;q=fresh(id);$('pdClassOverlay').classList.add('pd-veiled');for(const itemId of CLASSES[id].start){let placed=false;for(let i=0;i<ROWS*COLS&&!placed;i++)if(fits(itemId,i,0)){q.items.push({uid:uid(),id:itemId,rot:0,cells:cellsFor(itemId,i,0),level:1});discover(itemId);placed=true}}roll(true);hint(`${CLASSES[id].n}进入投币赛季`);draw()}
+function classScreen(){$('pdClassChoices').innerHTML=Object.entries(CLASSES).map(([id,c])=>`<button class="pd-choice" data-pd-class="${id}"><span class="pd-big">${c.i}</span><h3>${c.n}</h3><p>${c.d}</p></button>`).join('');document.querySelectorAll('[data-pd-class]').forEach(b=>b.onclick=()=>startClass(b.dataset.pdClass))}
+function showCodex(){$('pdInfoTitle').textContent='藏品图鉴';$('pdInfoBody').innerHTML=`<p style="color:var(--muted);line-height:1.6">强化每级提升物品有益数值35%；扩容对物品数值乘1.05。万象晶增强非宝石物品；宝石不互相循环放大。苍玉缩短周期触发间隔，单次治疗药剂没有冷却。触发间隔最低0.25秒，减伤最高75%。面板武器每秒理论不计暴击、耐力不足和未饮用的药剂。</p><div class="pd-codex">${Object.entries(ITEMS).map(([id,d])=>`<div style="opacity:${profile.seen.includes(id)?1:.42}"><span style="font-size:24px">${profile.seen.includes(id)?d.i:'❔'}</span><b>${profile.seen.includes(id)?d.n:'未发现'}</b><small>${profile.seen.includes(id)?d.d:'在货架或合成中发现'}</small></div>`).join('')}</div>`;$('pdInfoOverlay').classList.remove('pd-veiled')}
+function showSave(){const code=exportCode();$('pdInfoTitle').textContent='跨设备档案';$('pdInfoBody').innerHTML=`<p>荣耀 ${profile.glory} · 夺冠 ${profile.wins} · 最佳关卡 ${profile.best}</p><textarea class="pd-savebox" id="pdSaveCode">${code}</textarea><div class="pd-actions"><button class="pd-btn" id="pdCopyCode">复制导出</button><button class="pd-btn" id="pdImportCodeBtn">导入上方存档</button></div>`;$('pdInfoOverlay').classList.remove('pd-veiled');$('pdCopyCode').onclick=copyArchive;$('pdImportCodeBtn').onclick=()=>{try{importCode($('pdSaveCode').value);$('pdInfoOverlay').classList.add('pd-veiled');alert('导入成功')}catch(e){alert(e.message)}}}
+function showResult(win){$('pdInfoTitle').textContent=win?'投币冠军':'赛季落幕';$('pdInfoBody').innerHTML=`<h3>${win?'你以十胜战绩登上终局擂台。':'生命耗尽，重整构筑再战。'}</h3><div class="pd-build-row"><span>胜场</span><strong>${q.wins}</strong></div><div class="pd-build-row"><span>荣耀</span><strong>${profile.glory}</strong></div>`;$('pdInfoOverlay').classList.remove('pd-veiled')}
+$('pdRotateBtn').onclick=()=>{if(!editable())return;rotation=(rotation+1)%4;if(selectedItem){const it=q.items.find(x=>x.uid===selectedItem);const start=Math.min(...it.cells);if(fits(it.id,start,rotation,it.uid)){it.rot=rotation;it.cells=cellsFor(it.id,start,rotation)}else hint('当前位置无法旋转')}draw()};$('pdForgeBtn').onclick=forge;$('pdSellBtn').onclick=()=>{if(!editable())return;const it=q.items.find(x=>x.uid===selectedItem);if(!it)return hint('先选择一件已放置装备');q.gold+=Math.max(1,Math.floor(ITEMS[it.id].cost*.6));q.items=q.items.filter(x=>x!==it);selectedItem=null;draw()};$('pdRerollBtn').onclick=()=>roll();$('pdLockBtn').onclick=()=>{if(!editable())return;q.locked=!q.locked;draw()};$('pdFightBtn').onclick=startBattle;$('pdPauseBtn').onclick=()=>pauseBattle();$('pdCodexBtn').onclick=showCodex;$('pdSaveBtn').onclick=showSave;$('pdCloseInfoBtn').onclick=()=>$('pdInfoOverlay').classList.add('pd-veiled');$('pdNewBtn').onclick=()=>{if(confirm('放弃当前赛季，重新开局？')){clearInterval(battleTimer);battleTimer=null;runtime=null;selectedOffer=null;selectedItem=null;q=null;save();$('pdClassOverlay').classList.remove('pd-veiled')}};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseBattle()});document.addEventListener('keydown',e=>{if(e.key==='Escape')pauseBattle()});
+let drag={active:false,kind:null,offerIndex:null,uid:null,rot:0,moved:false,startX:0,startY:0,ghost:null};
+function cellIndexFromPoint(x,y){const el=document.elementFromPoint(x,y);const cell=el&&el.closest?el.closest('.pd-cell'):null;if(!cell)return -1;const grid=$('pdGrid');for(let i=0;i<grid.children.length;i++)if(grid.children[i]===cell)return i;return -1}
+function dragItemId(){return drag.kind==='offer'?q.shop[drag.offerIndex]:(q.items.find(x=>x.uid===drag.uid)||{}).id}
+function clearDragPreview(){document.querySelectorAll('.pd-cell.pd-drop-ok,.pd-cell.pd-drop-bad').forEach(c=>c.classList.remove('pd-drop-ok','pd-drop-bad'));if(drag.ghost){drag.ghost.remove();drag.ghost=null}}
+function startDrag(event,kind,ref,rot){if(!editable())return;drag.active=true;drag.kind=kind;drag.moved=false;drag.offerIndex=kind==='offer'?ref:null;drag.uid=kind==='item'?ref:null;drag.rot=rot||0;drag.startX=event.clientX;drag.startY=event.clientY}
+$('pdShop').addEventListener('pointerdown',(event)=>{const offer=event.target.closest('[data-pd-offer]');if(!offer||offer.disabled||!editable())return;startDrag(event,'offer',+offer.dataset.pdOffer,rotation)});
+$('pdGrid').addEventListener('pointerdown',(event)=>{const gear=event.target.closest('.pd-gear');if(!gear||!editable())return;const it=q.items.find(x=>x.uid===gear.dataset.pdUid);if(!it)return;startDrag(event,'item',it.uid,it.rot)});
+window.addEventListener('pointermove',(event)=>{if(!drag.active)return;if(!drag.moved&&Math.hypot(event.clientX-drag.startX,event.clientY-drag.startY)>10){drag.moved=true;const id=dragItemId();if(!id){drag.active=false;return}const def=ITEMS[id];const ghost=document.createElement('div');ghost.className='pd-drag-ghost';ghost.textContent=`${def.i} ${def.n}`;document.body.appendChild(ghost);drag.ghost=ghost}if(drag.moved&&drag.ghost){drag.ghost.style.left=`${event.clientX}px`;drag.ghost.style.top=`${event.clientY-56}px`}clearDragPreview();const idx=cellIndexFromPoint(event.clientX,event.clientY);if(idx>=0){const id=dragItemId();if(id){const ok=fits(id,idx,drag.rot,drag.uid);const grid=$('pdGrid');cellsFor(id,idx,drag.rot).forEach(ci=>{if(grid.children[ci])grid.children[ci].classList.add(ok?'pd-drop-ok':'pd-drop-bad')})}}});
+window.addEventListener('pointerup',(event)=>{if(!drag.active)return;if(drag.moved){const idx=cellIndexFromPoint(event.clientX,event.clientY);if(idx>=0){if(drag.kind==='offer'){selectedOffer=drag.offerIndex;selectedItem=null;rotation=drag.rot}else{selectedItem=drag.uid;selectedOffer=null}place(idx)}}clearDragPreview();setTimeout(()=>{drag.active=false;drag.moved=false},0)});
+load();classScreen();if(q){$('pdClassOverlay').classList.add('pd-veiled');if(!q.shop?.length)roll(true);else draw()}else{for(let i=0;i<ROWS*COLS;i++)$('pdGrid').insertAdjacentHTML('beforeend','<div class="pd-cell"></div>')}
+})();
+</script></body></html>

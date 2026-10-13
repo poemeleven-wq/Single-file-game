@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>三款小游戏</title>
+<style>
+  :root{
+    --ink:#1c1f26; --paper:#f4f1ea; --line:#d9d2c4; --accent:#3b6ea5; --accent2:#8a5a2b;
+    --card:#fffdf8; --muted:#6b6f78;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #fbf8f1 0%, var(--paper) 60%);
+    color:var(--ink); min-height:100vh; padding:clamp(20px,5vw,64px);
+    display:flex; flex-direction:column; align-items:center;
+  }
+  header{text-align:center; max-width:760px; margin-bottom:clamp(28px,5vw,52px)}
+  .kicker{letter-spacing:.5em; font-size:12px; color:var(--accent); text-transform:uppercase; margin-bottom:14px}
+  h1{font-size:clamp(30px,6vw,52px); font-weight:800; letter-spacing:.04em}
+  .lede{margin-top:16px; color:var(--muted); font-size:15px; line-height:1.8}
+  .grid{
+    width:100%; max-width:980px; display:grid; gap:20px;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  }
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:18px;
+    padding:26px 24px; display:flex; flex-direction:column; gap:14px;
+    box-shadow:0 12px 30px rgba(28,31,38,.06); transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .card:hover{transform:translateY(-4px); box-shadow:0 18px 40px rgba(28,31,38,.12)}
+  .badge{font-size:12px; letter-spacing:.12em; color:var(--accent2); border:1px solid var(--accent2); border-radius:999px; padding:4px 12px; align-self:flex-start}
+  .card h2{font-size:24px; font-weight:800; letter-spacing:.02em}
+  .card p{color:var(--muted); font-size:14px; line-height:1.7; flex:1}
+  .enter{
+    margin-top:6px; display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    background:var(--ink); color:#fff; text-decoration:none; font-weight:700;
+    padding:12px 18px; border-radius:12px; font-size:15px; transition:background .18s ease;
+  }
+  .enter:hover{background:var(--accent)}
+  .enter::after{content:"→"; font-weight:800}
+  footer{margin-top:clamp(36px,6vw,64px); color:var(--muted); font-size:12px; text-align:center; line-height:1.8}
+</style>
+</head>
+<body>
+  <header>
+    <div class="kicker">Browser Arcade</div>
+    <h1>三款小游戏</h1>
+    <p class="lede">三个纯前端、单文件、零依赖的浏览器小游戏。选择一个进入，无需安装、无需联网。</p>
+  </header>
+
+  <main class="grid">
+    <section class="card">
+      <span class="badge">双摇杆装甲作战</span>
+      <h2>铁砧要塞</h2>
+      <p>操控装甲单位迎击多波敌军，整备底盘、主炮与战术模块，在蓝图风格的工坊中完成作战准备。</p>
+      <a class="enter" href="铁砧要塞.html">进入铁砧要塞</a>
+    </section>
+
+    <section class="card">
+      <span class="badge">塔防策略</span>
+      <h2>夜篱苗圃</h2>
+      <p>在十二线苗圃布设雾灯塔，抵御夜潮守住核心。规划防线、调配光能、调度守园人。</p>
+      <a class="enter" href="夜篱苗圃.html">进入夜篱苗圃</a>
+    </section>
+
+    <section class="card">
+      <span class="badge">背包整理对战</span>
+      <h2>行囊决斗场</h2>
+      <p>在有限行囊格内编排装备，与对手轮番决战争夺十胜。挑选派别、锻造行囊、投币开战。</p>
+      <a class="enter" href="行囊决斗场.html">进入行囊决斗场</a>
+    </section>
+  </main>
+
+  <footer>
+    单文件 HTML · 内联样式与脚本 · 进度仅存于本地浏览器<br>
+    支持桌面键鼠与移动端触控
+  </footer>
+</body>
+</html>
